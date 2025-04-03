@@ -1,0 +1,509 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+    height: 40px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: rgb(20, 93, 171);
+    font-weight: bold;
+}
+
+.login-btn {
+    padding: 8px 15px;
+    border: 2px solid rgb(26, 34, 183);
+    color: #1c4bc2;
+    background: white;
+    cursor: pointer;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.login-btn:hover {
+    background: rgb(21, 34, 180);
+    color: white;
+}
+
+/* Banner */
+.banner {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.banner img {
+    width: 90%;
+    max-width: 1200px;
+    border-radius: 10px;
+}
+
+/* Booking & Rating */
+.booking,
+.rating-box,
+.services,
+.spa-relax,
+.shine-collection,
+.top-barbers,
+.shine-member {
+    width: 80%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.booking {
+    display: flex;
+    justify-content: space-between;
+}
+
+.booking-box {
+    background: #0a2a7c;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 60%;
+    padding-top: 40px;
+}
+
+.booking-box h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.booking-box p {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.booking-form {
+    display: flex;
+}
+
+.booking-form input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.booking-form button {
+    padding: 10px 15px;
+    background: #a4e0ff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.rating-box {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    width: 35%;
+}
+
+.rating-box a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.rating-box a:hover {
+    text-decoration: none;
+}
+
+.rating-box h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.rating-box p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.stars {
+    font-size: 20px;
+    color: #ffcc00;
+}
+
+/* Section Titles */
+.services h2,
+.spa-relax h2,
+.shine-collection h2,
+.top-barbers-header h2,
+.shine-title {
+    padding-top: 10px;
+    font-size: 20px;
+    color: #0a2a7c;
+    margin-bottom: 15px;
+}
+
+.top-barbers-header h2,
+.shine-title {
+    margin-bottom: 5px;
+}
+
+/* Wrapper cho tiêu đề section */
+.title-wrapper {
+    border-left: 4px solid #0a2a7c;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+/* Service & Spa Items */
+.service-list,
+.spa-list {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.service-item,
+.spa-item {
+    background: white;
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.service-item img,
+.spa-item img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.service-item h3,
+.spa-item h3 {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.service-item p,
+.spa-item p {
+    color: #666;
+    font-size: 14px;
+}
+
+.service-item a,
+.spa-item a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #0a2a7c;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.service-item a:hover,
+.spa-item a:hover {
+    text-decoration: underline;
+}
+
+.service-item:hover,
+.spa-item:hover,
+.shine-item:hover,
+.top-barbers .barber-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Shine Collection */
+.shine-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.shine-item {
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shine-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shine-banner {
+    grid-column: span 3;
+    height: auto;
+}
+
+/* Top Barbers */
+.top-barbers {
+    max-width: 1800px;
+}
+
+.top-barbers-header p {
+    font-size: 16px;
+    color: #0a2a7c;
+    margin-top: 5px;
+}
+
+.top-barbers .barber-list {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.top-barbers .barber-item {
+    background: white;
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    max-width: 300px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+    margin: 10px;
+}
+
+.top-barbers .barber-item img {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.top-barbers .barber-item h3 {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.top-barbers .barber-item p {
+    color: #666;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .top-barbers .barber-item {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .top-barbers .barber-item img {
+        height: 150px;
+    }
+
+    .top-barbers .barber-item h3 {
+        font-size: 16px;
+    }
+
+    .top-barbers .barber-item p {
+        font-size: 12px;
+    }
+}
+
+/* Shine Member */
+.shine-member {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.shine-description {
+    font-size: 14px;
+    color: #211e7c;
+    margin-bottom: 20px;
+}
+
+.shine-banner img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Footer */
+.footer {
+    background-color: #002060;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 180px;
+    margin: 10px;
+    text-align: left;
+}
+
+.footer-column p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.footer-column a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
+.app-links img,
+.social-links img {
+    width: 30px;
+    margin-right: 5px;
+}
+
+/* User Dropdown */
+.user-info {
+    position: relative;
+    user-select: none;
+}
+
+.user-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    color: #0A2A7C;
+    border: 2px solid;
+}
+
+.user-dropdown-trigger:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-arrow {
+    transition: transform 0.3s ease;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 220px;
+    z-index: 100;
+    overflow: hidden;
+    transform-origin: top center;
+    transform: scaleY(0);
+    opacity: 0;
+    max-height: 0;
+    transition:
+        transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.2s ease-out,
+        max-height 0.35s ease-out;
+    padding: 0;
+}
+
+.dropdown-menu.open {
+    transform: scaleY(1);
+    opacity: 1;
+    max-height: 500px;
+    padding: 8px 0;
+    transition:
+        transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.2s ease-in,
+        max-height 0.35s ease-in;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: block;
+    padding: 12px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+    outline: none;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    transform: translateY(-10px);
+    opacity: 0;
+    transition:
+        transform 0.2s ease-out,
+        opacity 0.15s ease-out;
+}
+
+.dropdown-menu.open a,
+.dropdown-menu.open button {
+    transform: translateY(0);
+    opacity: 1;
+    transition:
+        transform 0.25s ease-out 0.1s,
+        opacity 0.2s ease-out 0.1s;
+}
+
+.dropdown-menu a:last-child,
+.dropdown-menu button:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background: #f8f8f8;
+}
+
+.dropdown-menu button {
+    color: #ff0000;
+    text-align: left;
+}
