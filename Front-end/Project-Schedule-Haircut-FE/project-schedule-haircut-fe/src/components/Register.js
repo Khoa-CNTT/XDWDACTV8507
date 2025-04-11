@@ -1,0 +1,179 @@
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faUser, faEnvelope, faLock, faEye, faEyeSlash,
+    faPhone, faAddressBook, faSignature, faHashtag
+} from '@fortawesome/free-solid-svg-icons';
+import '../assets/css/Register.css';
+import useAuthService from '../services/authService';
+
+const RegisterForm = ({ onClose, onSwitchToLogin }) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { register } = useAuthService();
+    const [formData, setFormData] = useState({
+        userName: '',
+        email: '',
+        fullName: '',
+        password: '',
+        phone: '',
+        address: '',
+        age: '',
+        confirmPassword: ''
+    });
+
+    const [errors, setErrors] = useState({});
+
+    React.useEffect(() => {
+        return () => {
+            setFormData({
+                userName: '',
+                email: '',
+                fullName: '',
+                password: '',
+                phone: '',
+                address: '',
+                age: '',
+                confirmPassword: ''
+            });
+            setErrors({});
+        }
+    }, []);
+
+    const validate = () => {
+        const newErrors = {};
+
+        if (!/^0\d{9,10}$/.test(formData.phone)) {
+            newErrors.phone = 'Số điện thoại không hợp lệ (bắt đầu bằng 0, 10-11 số)';
+        }
+
+        if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
+            newErrors.email = 'Email không hợp lệ';
+        }
+
+        if (formData.password.length < 6) {
+            newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'Mật khẩu nhập lại không khớp';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async () => {
+        if (validate()) {
+            try {
+                const { confirmPassword, ...requestData } = formData;
+                await register(requestData);
+                onSwitchToLogin();
+            } catch (error) {
+                // lỗi đã được xử lý bởi toast trong useAuthService
+            }
+        }
+    };
+
+    const handleChange = (field) => (e) => {
+        const value = field === 'age' ? e.target.value.replace(/\D/g, '') : e.target.value;
+        setFormData({ ...formData, [field]: value });
+    };
+
+    return (
+        <div className="register-container">
+            <button className="close-button" onClick={onClose}>×</button>
+            <h2>ĐĂNG KÝ</h2>
+
+            <div className="register-content">
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faUser} className="icon" />
+                    <input type="text" placeholder="Nhập tên đăng nhập" value={formData.userName} onChange={handleChange('userName')} />
+                </div>
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faSignature} className="icon" />
+                    <input type="text" placeholder="Nhập họ và tên" value={formData.fullName} onChange={handleChange('fullName')} />
+                </div>
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faPhone} className="icon" />
+                    <input type="text" placeholder="Nhập số điện thoại" value={formData.phone} onChange={handleChange('phone')} />
+                </div>
+                {errors.phone && <p className="error-message">{errors.phone}</p>}
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faEnvelope} className="icon" />
+                    <input type="email" placeholder="Nhập email" value={formData.email} onChange={handleChange('email')} />
+                </div>
+                {errors.email && <p className="error-message">{errors.email}</p>}
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faAddressBook} className="icon" />
+                    <input type="text" placeholder="Nhập địa chỉ" value={formData.address} onChange={handleChange('address')} />
+                </div>
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faHashtag} className="icon" />
+                    <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Nhập tuổi"
+                        value={formData.age}
+                        onChange={handleChange('age')}
+                    />
+                </div>
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faLock} className="icon" />
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Nhập mật khẩu"
+                        value={formData.password}
+                        onChange={handleChange('password')}
+                    />
+                    <button
+                        type="button"
+                        className="toggle-password"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    </button>
+                </div>
+                {errors.password && <p className="error-message">{errors.password}</p>}
+
+                <div className="input-group">
+                    <FontAwesomeIcon icon={faLock} className="icon" />
+                    <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Nhập lại mật khẩu"
+                        value={formData.confirmPassword}
+                        onChange={handleChange('confirmPassword')}
+                    />
+                    <button
+                        type="button"
+                        className="toggle-password"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                        <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                    </button>
+                </div>
+                {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
+
+                <button className="register-button" onClick={handleSubmit}>Đăng Ký</button>
+            </div>
+
+            <div className="register-footer">
+                <div className="login-link">
+                    Bạn đã có tài khoản?{' '}
+                    <a href="#" onClick={(e) => { e.preventDefault(); onSwitchToLogin(); }}>
+                        Đăng nhập ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RegisterForm;

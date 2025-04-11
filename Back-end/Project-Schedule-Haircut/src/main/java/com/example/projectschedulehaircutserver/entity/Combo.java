@@ -31,6 +31,10 @@ public class Combo {
     @Column(name = "haircut_time", nullable = false)
     private Integer haircutTime;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "combo_service",
             joinColumns = @JoinColumn(name = "combo_id"),

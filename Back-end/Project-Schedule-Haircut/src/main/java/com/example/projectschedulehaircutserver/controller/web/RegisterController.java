@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/web")
 @AllArgsConstructor
@@ -23,7 +25,9 @@ public class RegisterController {
             String message = authenticationService.registerUser(UserRegisterRequest);
             return ResponseEntity.status(HttpStatus.OK).body(message);
         } catch (RegisterException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", e.getMessage())); // Trả về JSON có key "message"
         }
     }
 }

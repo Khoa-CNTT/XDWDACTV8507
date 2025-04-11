@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa;
+}
+
+a {
+    text-decoration: none;
+}
+
+.container__chart {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+.header__service-img {
+    width: 80px;
+    height: 80px;
+    margin: 8px;
+    border: 1px solid #dbdbdb;
+    float: left;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.header__service1 {
+    text-align: left;
+    font-size: 16px;
+    margin-left: 14px;
+    margin-top: 30px;
+}
+
+.container {
+    padding: 20px;
+}
+
+.header__voucher {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    color: #15397F;
+}
+
+.header__total {
+    color: #15397F;
+    margin-top: 25px;
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.btn {
+    min-width: 170px;
+    height: 40px;
+    font-size: 18px;
+    text-decoration: none;
+    border: none;
+    border-radius: 3px;
+    padding: 0 16px;
+    outline: none;
+    cursor: pointer;
+    color: #fff;
+    background: #15397F;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

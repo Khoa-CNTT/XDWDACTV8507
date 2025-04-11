@@ -31,6 +31,9 @@ public class Service {
     @Column(name = "haircut_time", nullable = false)
     private Integer haircutTime;
 
+    @Column(name = "image", nullable = false)
+    private String image;
+
     @ManyToMany(mappedBy = "services", fetch = FetchType.LAZY)
     private Set<Combo> combos = new HashSet<>();
 
@@ -39,6 +42,10 @@ public class Service {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "service")
     private Set<CartItem> cartItems = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @CreationTimestamp
     @Column(nullable = false)

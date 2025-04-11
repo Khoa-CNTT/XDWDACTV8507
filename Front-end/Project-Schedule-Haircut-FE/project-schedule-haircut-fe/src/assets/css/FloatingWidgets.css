@@ -1,0 +1,52 @@
+.floating-widgets {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+}
+
+
+.circle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.circle-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.circle-btn.arrow {
+    background-color: #123d89;
+    color: white;
+}
+
+.circle-btn.outline {
+    border: 2px solid #123d89;
+    position: relative;
+    overflow: visible;
+}
+
+.circle-btn.outline img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.circle-btn.arrow:hover {
+    transform: translateY(-3px);
+    transition: transform 0.2s ease-in-out;
+}

@@ -4,15 +4,15 @@ import com.example.projectschedulehaircutserver.entity.Account;
 import com.example.projectschedulehaircutserver.entity.Cart;
 import com.example.projectschedulehaircutserver.entity.Customer;
 import com.example.projectschedulehaircutserver.entity.Role;
-import com.example.projectschedulehaircutserver.exeption.LoginException;
-import com.example.projectschedulehaircutserver.exeption.RefreshTokenException;
-import com.example.projectschedulehaircutserver.exeption.RegisterException;
+import com.example.projectschedulehaircutserver.exeption.*;
 import com.example.projectschedulehaircutserver.repository.*;
 import com.example.projectschedulehaircutserver.request.LoginRequest;
 import com.example.projectschedulehaircutserver.request.RefreshTokenRequest;
 import com.example.projectschedulehaircutserver.request.RegisterRequest;
 import com.example.projectschedulehaircutserver.response.AuthenticationResponse;
+import com.example.projectschedulehaircutserver.service.email.EmailService;
 import com.example.projectschedulehaircutserver.service.jwt.JwtService;
+import com.example.projectschedulehaircutserver.service.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +42,9 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final RedisService redisService;
+    private final EmailService emailService;
+
 
     @Override
     public String registerUser(RegisterRequest request) throws RegisterException {
@@ -160,4 +165,35 @@ public class AuthenticationServiceImpl implements AuthenticationService{
             throw new RefreshTokenException("Làm mới token thất bại: " + e.getMessage());
         }
     }
+
+    @Override
+    public String requestChangePassword(String email) throws CustomerException {
+        Optional<Customer> customerOtp = customerRepo.findCustomerByEmail(email);
+        if (customerOtp.isEmpty()) throw new CustomerException("Email không tồn tại");
+
+        String code = UUID.randomUUID().toString().substring(0, 6);
+
+        redisService.saveOTP(email, code, 10); // TTL = 10 phút
+
+        emailService.send(email, "Mã xác thực đổi mật khẩu: <b>" + code + "</b>");
+        return "Mã xác thực đã gửi qua email.";
+    }
+
+    @Override
+    public String changePassword(String email, String code, String newPassword) throws CustomerException {
+        String savedCode = redisService.getOTP(email);
+
+        if (savedCode == null) throw new CustomerException("Mã xác thực hết hạn hoặc không tồn tại");
+        if (!savedCode.equals(code)) throw new CustomerException("Mã xác thực không đúng");
+
+        Customer customer = customerRepo.findCustomerByEmail(email).orElseThrow();
+        customer.setPassword(encoder.encode(newPassword));
+        customerRepo.save(customer);
+
+        redisService.deleteOTP(email);
+
+        return "Đổi mật khẩu thành công";
+    }
+
+
 }

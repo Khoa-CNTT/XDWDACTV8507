@@ -1,6 +1,6 @@
 // src/services/authService.js
 import { useDispatch } from 'react-redux';
-import { login as loginAction, logout as logoutAction, clearError } from '../stores/slices/authSlice';
+import { login as loginAction, logout as logoutAction, clearError, register as registerAction } from '../stores/slices/authSlice';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,9 +41,25 @@ const useAuthService = () => {
         }
     };
 
+    const register = async (userData) => {
+        try {
+            dispatch(clearError());
+            const resultAction = await dispatch(registerAction(userData)).unwrap();
+            if (registerAction.fulfilled.match(resultAction)) {
+                toast.success('Đăng ký thành công!');
+                return resultAction.payload;
+            } else {
+                throw resultAction.payload;
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
     return {
         login,
-        logout
+        logout,
+        register
     };
 };
 

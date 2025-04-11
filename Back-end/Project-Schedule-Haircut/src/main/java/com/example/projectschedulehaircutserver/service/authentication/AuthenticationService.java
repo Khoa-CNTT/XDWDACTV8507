@@ -1,5 +1,6 @@
 package com.example.projectschedulehaircutserver.service.authentication;
 
+import com.example.projectschedulehaircutserver.exeption.CustomerException;
 import com.example.projectschedulehaircutserver.exeption.LoginException;
 import com.example.projectschedulehaircutserver.exeption.RefreshTokenException;
 import com.example.projectschedulehaircutserver.exeption.RegisterException;
@@ -14,4 +15,8 @@ public interface AuthenticationService {
     AuthenticationResponse authenticate(LoginRequest request) throws LoginException;
 
     AuthenticationResponse refreshToken(RefreshTokenRequest request) throws RefreshTokenException;
+
+    String requestChangePassword(String email) throws CustomerException;
+
+    String changePassword(String email, String code, String newPassword) throws CustomerException;
 }

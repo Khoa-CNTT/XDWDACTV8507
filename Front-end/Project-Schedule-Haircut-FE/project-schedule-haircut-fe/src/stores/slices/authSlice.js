@@ -1,4 +1,3 @@
-// src/stores/slices/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../config/axios';
 
@@ -28,6 +27,29 @@ export const logout = createAsyncThunk(
     }
 );
 
+export const register = createAsyncThunk(
+    'auth/register',
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await axiosClient.post('/web/register', userData);
+            return response.data;
+        } catch (error) {
+            console.error("API error:", error);
+
+            if (error) {
+                return rejectWithValue({
+                    message: error.message
+                });
+            }
+
+            // Fallback: trả về lỗi mặc định
+            return rejectWithValue({
+                message: 'Đăng ký thất bại lỗi không xác định'
+            });
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -44,6 +66,10 @@ const authSlice = createSlice({
         clearError: (state) => {
             state.error = null;
         },
+        initializeAuth: (state, action) => {
+            state.user = { username: action.payload.username };
+            state.isAuthenticated = action.payload.isAuthenticated;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -74,6 +100,20 @@ const authSlice = createSlice({
                 state.error = null;
             })
             .addCase(logout.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(register.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(register.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.user = { username: action.payload };
+            })
+            .addCase(register.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import '../assets/css/Login.css'; // Import your CSS file for styling
-import { useNavigate } from 'react-router-dom';
 import useAuthService from '../services/authService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { initializeAuth } from '../stores/slices/authSlice';
 
-const LoginForm = ({ onClose, children, setUsername }) => {
+
+const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) => {
     const [credentials, setCredentials] = useState({
         userName: '',
         password: ''
@@ -14,7 +16,13 @@ const LoginForm = ({ onClose, children, setUsername }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuthService();
-    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        return () => {
+            setCredentials({ userName: '', password: '' });
+        }
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -30,18 +38,16 @@ const LoginForm = ({ onClose, children, setUsername }) => {
         setIsLoading(true);
 
         try {
-            const userData = await login(credentials);
+            const user = await login(credentials);
+            if (user?.username) {
+                dispatch(initializeAuth({
+                    username: user.username,
+                    isAuthenticated: true,
+                }));
 
-            if (!userData) {
-                toast.error('Đăng nhập thất bại. Vui lòng thử lại.');
-                return;
-            } else {
                 toast.success('Đăng nhập thành công!');
-                setUsername(userData.username);
-                if (onClose) onClose();
-                navigate('/home');
+                onClose();
             }
-
         } catch (error) {
             console.error('Login error:', error);
             setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
@@ -52,7 +58,7 @@ const LoginForm = ({ onClose, children, setUsername }) => {
 
     return (
         <div className="login-container">
-            {children}
+            <button className="close-button" onClick={onClose}>×</button>
             <h2>ĐĂNG NHẬP</h2>
 
             {error && <div className="error-message">{error}</div>}
@@ -84,7 +90,16 @@ const LoginForm = ({ onClose, children, setUsername }) => {
                         required
                     />
                 </div>
-                <a href="/forgot-password" className="forgot-password">Quên mật khẩu?</a>
+                <a
+                    href="#"
+                    className="forgot-password"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        onSwitchToForgotPassword();
+                    }}
+                >
+                    Quên mật khẩu?
+                </a>
                 <button
                     type="submit"
                     className="login-button"
@@ -95,7 +110,16 @@ const LoginForm = ({ onClose, children, setUsername }) => {
             </form>
 
             <div className="register-link">
-                Bạn chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
+                Bạn chưa có tài khoản?{' '}
+                <a
+                    href="#"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        onSwitchToRegister();
+                    }}
+                >
+                    Đăng ký ngay
+                </a>
             </div>
         </div>
     );

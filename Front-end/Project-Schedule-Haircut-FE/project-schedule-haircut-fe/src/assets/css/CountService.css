@@ -1,0 +1,21 @@
+.barber-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #0722eb, #3870fc);
+    padding: 4px 10px;
+    border-radius: 999px;
+    /* oval shape */
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    /* Position it absolutely within the parent container */
+    top: -10px;
+    /* Adjust position as needed */
+    right: -15px;
+    /* Adjust position as needed */
+    min-width: 32px;
+    text-align: center;
+    z-index: 1;
+    /* Ensure it's above the image */
+}

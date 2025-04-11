@@ -58,7 +58,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
             employeeRepo.save(employee);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 

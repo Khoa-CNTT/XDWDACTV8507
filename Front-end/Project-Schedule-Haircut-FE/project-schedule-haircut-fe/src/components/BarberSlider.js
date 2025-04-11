@@ -3,39 +3,38 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "../assets/css/BarberSlider.css"; // Import your CSS file for styling
-import barber1 from "../assets/image/barber1.jpg";
-import barber2 from "../assets/image/barber2.jpg";
-import barber3 from "../assets/image/barber3.jpg";
-import barber4 from "../assets/image/barber3.jpg";
+import "../assets/css/BarberSlider.css";
 
-const barbers = [
-    { name: "Dương Văn Mạnh", location: "345 Nguyễn Văn Linh, Đà Nẵng", image: barber1 },
-    { name: "Đỗ Duy Thành", location: "172 Quang Trung, Đà Nẵng", image: barber2 },
-    { name: "Nguyễn Văn Thuận", location: "328 Bạch Đằng, Hà Nội", image: barber3 },
-    { name: "Nguyễn Trần", location: "290 Quang Trung, Thanh Hóa", image: barber4 },
-];
-
-
-const BarberSlider = () => {
+const BarberSlider = ({ barbers }) => {
     return (
         <div className="barber-slider">
-
+            {/* <h2>Đội ngũ Stylist dày dặn kinh nghiệm</h2> */}
             <Swiper
                 modules={[Navigation]}
                 spaceBetween={20}
                 slidesPerView={3}
                 navigation
                 breakpoints={{
+                    640: { slidesPerView: 1 },
                     768: { slidesPerView: 2 },
                     1024: { slidesPerView: 3 },
                 }}
             >
-                {barbers.map((barber, index) => (
-                    <SwiperSlide key={index} className="barber-card">
-                        <img src={barber.image} alt={barber.name} className="barber-image" />
-                        <h3>{barber.name}</h3>
-                        <p>{barber.location}</p>
+                {barbers.map((barber) => (
+                    <SwiperSlide key={barber.id} className="barber-slide">
+                        <div className="barber-card">
+                            <div className="barber-image-container">
+                                <img
+                                    src={barber.avatar}
+                                    alt={barber.fullName}
+                                    className="barber-image"
+                                />
+                            </div>
+                            <div className="barber-content">
+                                <h3>{barber.fullName}</h3>
+                                <p>{barber.address}</p>
+                            </div>
+                        </div>
                     </SwiperSlide>
                 ))}
             </Swiper>
