@@ -10,6 +10,7 @@ import com.example.projectschedulehaircutserver.exeption.LoginException;
 import com.example.projectschedulehaircutserver.repository.*;
 import com.example.projectschedulehaircutserver.request.AddComboInCartItemRequest;
 import com.example.projectschedulehaircutserver.request.AddServiceInCartItemRequest;
+import com.example.projectschedulehaircutserver.response.CartItemResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +46,6 @@ public class CartServiceImpl implements CartService{
                                 .cart(cart)
                                 .combo(combo)
                                 .service(null)
-                                .price(combo.getPrice())
                                 .build();
                         cartItemRepo.save(cartItem);
                     }
@@ -77,7 +78,6 @@ public class CartServiceImpl implements CartService{
                                 .cart(cart)
                                 .combo(null)
                                 .service(service)
-                                .price(service.getPrice())
                                 .build();
                         cartItemRepo.save(cartItem);
                     }
@@ -90,6 +90,32 @@ public class CartServiceImpl implements CartService{
             }
         } else {
             throw new LoginException("Bạn Chưa Đăng Nhập");
+        }
+    }
+
+    @Override
+    public Set<CartItemResponse> getCartItem() throws LoginException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            Customer customer = (Customer) authentication.getPrincipal();
+            Cart cart = cartRepo.findCartByCustomerId(customer.getId()).orElseThrow();
+
+            return cartItemRepo.findCartItemsByCartId(cart.getId());
+        } else {
+            throw new LoginException("Bạn Chưa Đăng Nhập");
+        }
+    }
+
+    @Override
+    public Integer countCartItem() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            Customer customer = (Customer) authentication.getPrincipal();
+            Cart cart = cartRepo.findCartByCustomerId(customer.getId()).orElseThrow();
+
+            return cartItemRepo.countByCartId(cart.getId());
+        } else {
+            return 0;
         }
     }
 

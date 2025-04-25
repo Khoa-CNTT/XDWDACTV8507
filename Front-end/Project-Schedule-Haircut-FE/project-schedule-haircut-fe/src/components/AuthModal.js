@@ -1,77 +1,85 @@
-import React, { useState } from 'react';
+// components/AuthModal.js
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { hideAuthModal, switchAuthForm } from '../stores/slices/actionFormSlice';
+import LoginForm from '../components/Login';
+import RegisterForm from '../components/Register';
+import ForgotPasswordForm from '../components/ForgotPassword';
+import VerifyCodeForm from '../components/VerifyCode';
 import '../assets/css/AuthModal.css';
-import LoginForm from './Login';
-import RegisterForm from './Register';
-import ForgotPasswordForm from './ForgotPassword';
-import VerifyCodeForm from './VerifyCode';
 
-const AuthModal = ({ onClose }) => {
-    const [currentForm, setCurrentForm] = useState('login');
-    const [transition, setTransition] = useState(false);
-    const [email, setEmail] = useState('');
-    const [formResetKey, setFormResetKey] = useState(Date.now());
+const AuthModal = () => {
+    const dispatch = useDispatch();
+    const {
+        showAuthModal,
+        currentForm,
+        email,
+        modalProps,
+        formResetKey
+    } = useSelector(state => state.actionForm);
+    const [transition, setTransition] = React.useState(false);
 
-    const resetAllForms = () => {
-        setEmail('');
-        setFormResetKey(Date.now());
-    };
-
-    const handleSwitchForm = (form) => {
+    const handleSwitchForm = (form, email = '') => {
         setTransition(true);
         setTimeout(() => {
-            setCurrentForm(form);
+            dispatch(switchAuthForm({ form, email }));
             setTransition(false);
-            resetAllForms();
         }, 300);
     };
 
     const handleCloseModal = () => {
-        resetAllForms();
-        onClose();
+        dispatch(hideAuthModal());
     };
 
+    if (!showAuthModal) return null;
+
     return (
-        <div className="auth-modal-container">
+        <div className="auth-modal-overlay">
+            <div className="auth-modal-container">
+                {/* Login Form */}
+                <div className={`auth-form ${currentForm === 'login' ? 'active' : 'left'}`}>
+                    <LoginForm
+                        key={`login-${formResetKey}`}
+                        onClose={handleCloseModal}
+                        onSwitchToRegister={() => handleSwitchForm('register')}
+                        onSwitchToForgotPassword={() => handleSwitchForm('forgot')}
+                        {...modalProps}
+                    />
+                </div>
 
-            <div className={`auth-form ${currentForm === 'login' ? 'active' : transition ? 'left' : 'right'}`}>
-                <LoginForm
-                    key={formResetKey}
-                    onClose={handleCloseModal}
-                    onSwitchToRegister={() => handleSwitchForm('register')}
-                    onSwitchToForgotPassword={() => handleSwitchForm('forgot')}
-                />
+
+                {/* Register Form */}
+                <div className={`auth-form ${currentForm === 'register' ? 'active' : 'left'}`}
+                    style={{ display: currentForm === 'register' ? 'flex' : 'none' }}>
+                    <RegisterForm
+                        key={`register-${formResetKey}`}
+                        onClose={handleCloseModal}
+                        onSwitchToLogin={() => handleSwitchForm('login')}
+                        {...modalProps}
+                    />
+                </div>
+
+                {/* Forgot Password Form */}
+                <div className={`auth-form ${currentForm === 'forgot' ? 'active' : transition ? 'right' : 'left'}`}>
+                    <ForgotPasswordForm
+                        key={`forgot-${formResetKey}`}
+                        onClose={handleCloseModal}
+                        onBackToLogin={() => handleSwitchForm('login')}
+                        onGoToVerify={(email) => handleSwitchForm('verify', email)}
+                        {...modalProps}
+                    />
+                </div>
+
+                {/* Verify Code Form */}
+                <div className={`auth-form ${currentForm === 'verify' ? 'active' : transition ? 'right' : 'left'}`}>
+                    <VerifyCodeForm
+                        key={`verify-${formResetKey}`}
+                        onClose={handleCloseModal}
+                        onBack={() => handleSwitchForm('login')}
+                        {...modalProps}
+                    />
+                </div>
             </div>
-
-            <div className={`auth-form ${currentForm === 'register' ? 'active' : transition ? 'right' : 'left'}`}>
-                <RegisterForm
-                    key={formResetKey}
-                    onClose={handleCloseModal}
-                    onSwitchToLogin={() => handleSwitchForm('login')}
-                />
-            </div>
-
-            <div className={`auth-form ${currentForm === 'forgot' ? 'active' : transition ? 'right' : 'left'}`}>
-                <ForgotPasswordForm
-                    key={formResetKey}
-                    onClose={handleCloseModal}
-                    onBackToLogin={() => handleSwitchForm('login')}
-                    onGoToVerify={() => handleSwitchForm('verify')}
-                    email={email}
-                    setEmail={setEmail}
-                />
-            </div>
-
-            <div className={`auth-form ${currentForm === 'verify' ? 'active' : transition ? 'right' : 'left'}`}>
-                <VerifyCodeForm
-                    key={formResetKey}
-                    onVerify={(code) => {
-                        console.log("Mã xác thực nhập:", code);
-                    }}
-                    onBack={() => handleSwitchForm('login')}
-                    email={email}
-                />
-            </div>
-
         </div>
     );
 };

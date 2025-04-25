@@ -15,29 +15,19 @@ public class ChangePasswordController {
 
     private final AuthenticationService authenticationService;
 
-    // Gửi mã OTP đến email
     @PostMapping("/request-otp")
-    public ResponseEntity<String> requestChangePassword(@RequestBody OTPRequest request) {
-        try {
-            String result = authenticationService.requestChangePassword(request.getEmail());
-            return ResponseEntity.ok(result);
-        } catch (CustomerException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> requestChangePassword(@RequestBody OTPRequest request) throws CustomerException {
+        String result = authenticationService.requestChangePassword(request.getEmail());
+        return ResponseEntity.ok(result);
     }
 
-    // Đổi mật khẩu
     @PostMapping("/change")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
-        try {
-            String result = authenticationService.changePassword(
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) throws CustomerException {
+        String result = authenticationService.changePassword(
                     request.getEmail(),
                     request.getCode(),
                     request.getNewPassword()
-            );
-            return ResponseEntity.ok(result);
-        } catch (CustomerException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        );
+        return ResponseEntity.ok(result);
     }
 }

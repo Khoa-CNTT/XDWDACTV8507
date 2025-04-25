@@ -24,10 +24,16 @@ axiosClient.interceptors.request.use(
 );
 
 // Xử lý response
+// axiosClient.js
 axiosClient.interceptors.response.use(
     (response) => response.data,
     async (error) => {
         const originalRequest = error.config;
+
+        // Bỏ qua xử lý refresh token nếu là request login
+        if (error.config.url.includes('/web/login')) {
+            return Promise.reject(error.response?.data || error);
+        }
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
@@ -36,14 +42,13 @@ axiosClient.interceptors.response.use(
                 await axios.get(API_URL + '/web/refresh-token', {
                     withCredentials: true
                 });
-
-                return axiosClient(originalRequest); // retry request gốc
+                return axiosClient(originalRequest);
             } catch (refreshError) {
-                window.location.href = '/home'; // hoặc chuyển sang trang login
                 return Promise.reject(refreshError);
             }
         }
-        return Promise.reject(error.response?.data || error.message);
+
+        return Promise.reject(error.response?.data || error);
     }
 );
 

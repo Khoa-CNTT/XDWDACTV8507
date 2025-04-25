@@ -111,6 +111,10 @@ public class JwtService {
         return blackListRepo.findByToken(token).isPresent();
     }
 
+    public boolean isTokenInWhiteList(String username){
+        return whiteListRepo.findByUserId(username).isPresent();
+    }
+
     @Transactional
     public String generateNewAccessTokenFromRefreshToken(String refreshToken) throws RefreshTokenException {
         // 1. Kiểm tra blacklist
@@ -150,8 +154,7 @@ public class JwtService {
             final String username = extractUsername(token);
             return username.equals(userDetails.getUsername())
                     && !isTokenExpired(token)
-                    && !isTokenInBlackList(token)
-                    && whiteListRepo.findByToken(token).isPresent();
+                    && !isTokenInBlackList(token);
         } catch (JwtException e) {
             return false;
         }

@@ -22,4 +22,6 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer> {
     @Query("select c from Customer c where c.email = :email")
     Optional<Customer> findCustomerByEmail(@Param("email") String email);
 
+    @Query("select c from Customer c where c.userName = :username")
+    Optional<Customer> findByCustomerUsername(@Param("username") String username);
 }

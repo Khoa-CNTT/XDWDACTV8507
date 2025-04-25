@@ -25,22 +25,17 @@ public class LogoutController {
     private final CookieUtil cookieUtil;
 
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            String refreshToken = getRefreshTokenFromCookies(request);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) throws LogoutException {
+        String refreshToken = getRefreshTokenFromCookies(request);
 
-            if (refreshToken != null) {
-                jwtService.revokeRefreshToken(refreshToken);
-            }
-
-            cookieUtil.removeCookies(response);
-
-            return ResponseEntity.ok("Đăng xuất thành công");
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Lỗi khi đăng xuất: " + e.getMessage());
+        if (refreshToken != null) {
+            jwtService.revokeRefreshToken(refreshToken);
+        } else {
+            throw new LogoutException("Refresh token không có");
         }
+
+        cookieUtil.removeCookies(response);
+        return ResponseEntity.ok("Đăng xuất thành công");
     }
 
     private String getRefreshTokenFromCookies(HttpServletRequest request) {

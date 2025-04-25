@@ -6,10 +6,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import '../assets/css/Register.css';
 import useAuthService from '../services/authService';
+import { toast } from 'react-toastify';
 
 const RegisterForm = ({ onClose, onSwitchToLogin }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const { register } = useAuthService();
     const [formData, setFormData] = useState({
         userName: '',
@@ -65,12 +67,20 @@ const RegisterForm = ({ onClose, onSwitchToLogin }) => {
 
     const handleSubmit = async () => {
         if (validate()) {
+            setIsLoading(true); // Bật trạng thái loading
             try {
                 const { confirmPassword, ...requestData } = formData;
-                await register(requestData);
-                onSwitchToLogin();
+                const result = await register(requestData);
+                console.log(result);
+
+                if (result) {
+                    onSwitchToLogin();
+                }
             } catch (error) {
-                // lỗi đã được xử lý bởi toast trong useAuthService
+                console.log(error);
+                toast.error(error.message || 'Đăng ký thất bại');
+            } finally {
+                setIsLoading(false);
             }
         }
     };
@@ -83,7 +93,7 @@ const RegisterForm = ({ onClose, onSwitchToLogin }) => {
     return (
         <div className="register-container">
             <button className="close-button" onClick={onClose}>×</button>
-            <h2>ĐĂNG KÝ</h2>
+            <h2 className="register-title">ĐĂNG KÝ</h2>
 
             <div className="register-content">
 
@@ -161,7 +171,18 @@ const RegisterForm = ({ onClose, onSwitchToLogin }) => {
                 </div>
                 {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
 
-                <button className="register-button" onClick={handleSubmit}>Đăng Ký</button>
+                <button
+                    className="register-button"
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <>
+                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            {' '}Đang xử lý...
+                        </>
+                    ) : 'Đăng Ký'}
+                </button>
             </div>
 
             <div className="register-footer">

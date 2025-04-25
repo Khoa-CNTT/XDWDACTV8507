@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from "./routers/routes";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from './stores/context/AuthContext';
+import AuthModal from "./components/AuthModal";
 
 function App() {
     return (

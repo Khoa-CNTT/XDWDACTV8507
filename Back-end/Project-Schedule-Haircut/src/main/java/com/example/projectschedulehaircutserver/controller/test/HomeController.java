@@ -32,12 +32,12 @@ public class HomeController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody LoginRequest UserLoginRequest){
-        try{
-            return ResponseEntity.status(HttpStatus.OK).body(authenticationService.authenticate(UserLoginRequest));
-        } catch (LoginException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> authenticate(@RequestBody LoginRequest UserLoginRequest){
+//        try{
+//            return ResponseEntity.status(HttpStatus.OK).body(authenticationService.authenticate(UserLoginRequest));
+//        } catch (LoginException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//        }
+//    }
 }

@@ -25,25 +25,10 @@ public class LoginController {
     private final CookieUtil cookieUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody LoginRequest UserLoginRequest, HttpServletResponse response){
-        try {
-            AuthenticationResponse authResponse = authenticationService.authenticate(UserLoginRequest);
+    public ResponseEntity<?> authenticate(@RequestBody LoginRequest userLoginRequest, HttpServletResponse response)  {
+        AuthenticationResponse authResponse = authenticationService.authenticate(userLoginRequest);
 
-            // Kiểm tra response hợp lệ trước khi tạo cookie
-            if (authResponse == null || authResponse.getToken() == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Authentication failed: Invalid credentials");
-            }
-
-            cookieUtil.generatorTokenCookie(response, authResponse);
-            return ResponseEntity.ok(authResponse);
-
-        } catch (LoginException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Authentication failed: " + e.getMessage());
-        }
+        cookieUtil.generatorTokenCookie(response, authResponse);
+        return ResponseEntity.ok(authResponse);
     }
 }

@@ -1,17 +1,18 @@
 import { useDispatch } from 'react-redux';
 import {
     fetchAllEmployees as fetchAllEmployeesAction,
-    clearError
+    clearEmployeeError as clearError,
 } from '../stores/slices/employeeSlice';
 import { toast } from 'react-toastify';
+
 const useEmployeeService = () => {
     const dispatch = useDispatch();
     const getEmployees = async () => {
         try {
             dispatch(clearError());
-            const resultAction = await dispatch(fetchAllCategoriesAction());
+            const resultAction = await dispatch(fetchAllEmployeesAction());
 
-            if (fetchAllCategoriesAction.fulfilled.match(resultAction)) {
+            if (fetchAllEmployeesAction.fulfilled.match(resultAction)) {
                 return resultAction.payload;
             } else {
                 throw resultAction.payload;

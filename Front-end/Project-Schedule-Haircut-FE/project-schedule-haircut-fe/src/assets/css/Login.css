@@ -1,122 +1,183 @@
+/* Login.css */
 .login-container {
-    background-color: white;
-    padding: 40px;
+    background-color: #fff;
+    padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    max-width: 90%;
-    position: fixed;
-    top: -47%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1001;
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    line-height: 1.5;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    user-select: none;
 }
 
-h2 {
+.login-title {
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 1.8rem;
+    margin: 0 0 2rem;
+    font-size: 1.75rem;
     font-weight: 600;
-    color: #222;
+    color: #1a1a1a;
+    position: relative;
+}
+
+.login-fields {
+    flex: 1;
+    overflow-y: auto;
+    /* margin-bottom: 1rem; */
 }
 
 .input-group {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
 }
 
 .input-group .icon {
     position: absolute;
-    left: 10px;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #999;
-    font-size: 1.2em;
+    color: #6b7280;
+    font-size: 1.1rem;
+    z-index: 2;
 }
 
-input[type="text"],
-input[type="password"] {
-    width: calc(100% - 0px);
-    padding: 12px 10px 12px 35px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
+.input-group input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: #f9fafb;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
+.input-group input:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    background-color: #fff;
+}
+
+.input-group .password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+}
+
+.input-group .password-toggle:hover {
+    color: #3b82f6;
 }
 
 .forgot-password {
     display: block;
     text-align: right;
-    margin-bottom: 20px;
-    color: #007bff;
+    margin: 1rem 0 1.5rem;
+    color: #3b82f6;
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
 }
 
 .forgot-password:hover {
     text-decoration: underline;
+    opacity: 0.9;
 }
 
 .login-button {
     width: 100%;
-    padding: 14px;
-    background-color: #007bff;
+    padding: 1rem;
+    background-color: #3b82f6;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
 }
 
 .login-button:hover {
-    background-color: #0056b3;
+    background-color: #2563eb;
+}
+
+.login-button:disabled {
+    background-color: #bfdbfe;
+    cursor: not-allowed;
+    opacity: 0.8;
 }
 
 .register-link {
     text-align: center;
-    margin-top: 20px;
-    font-size: 0.9em;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #4b5563;
 }
 
 .register-link a {
-    color: #0047AB;
+    color: #3b82f6;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    transition: opacity 0.2s ease;
 }
 
 .register-link a:hover {
     text-decoration: underline;
-}
-
-.overlay {
-    position: fixed;
-    /* Thay đổi thành fixed */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    opacity: 0.9;
 }
 
 .close-button {
-    /* Thêm style cho nút đóng */
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 35px;
+    right: 45px;
     background: none;
     border: none;
-    font-size: 1.5em;
+    font-size: 32px;
     cursor: pointer;
-    color: #333;
+    color: #666;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: #1f2937;
+    transform: scale(1.1);
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0.5rem 0.5rem;
+    font-weight: 500;
+}
+
+/* Loading spinner */
+.spinner-border {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    vertical-align: text-bottom;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+    margin-right: 0.75rem;
+}
+
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
 }

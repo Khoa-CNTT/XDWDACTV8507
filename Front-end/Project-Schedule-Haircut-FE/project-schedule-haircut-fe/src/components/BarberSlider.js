@@ -6,6 +6,8 @@ import "swiper/css/navigation";
 import "../assets/css/BarberSlider.css";
 
 const BarberSlider = ({ barbers }) => {
+    const filteredBarbers = barbers.filter((barber) => barber.type === 0);
+
     return (
         <div className="barber-slider">
             {/* <h2>Đội ngũ Stylist dày dặn kinh nghiệm</h2> */}
@@ -20,7 +22,7 @@ const BarberSlider = ({ barbers }) => {
                     1024: { slidesPerView: 3 },
                 }}
             >
-                {barbers.map((barber) => (
+                {filteredBarbers.map((barber) => (
                     <SwiperSlide key={barber.id} className="barber-slide">
                         <div className="barber-card">
                             <div className="barber-image-container">

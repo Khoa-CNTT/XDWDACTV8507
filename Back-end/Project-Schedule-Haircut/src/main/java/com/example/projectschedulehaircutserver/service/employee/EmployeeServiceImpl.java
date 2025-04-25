@@ -34,6 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             Account account = Account.builder()
                     .fullName(employeeDTO.getFullName())
                     .userName(employeeDTO.getUserName())
+                    .email(employeeDTO.getEmail())
                     .password(encoder.encode(employeeDTO.getPassword()))
                     .age(employeeDTO.getAge())
                     .address(employeeDTO.getAddress())
@@ -47,6 +48,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
             employee.setFullName(employeeDTO.getFullName());
             employee.setUserName(employeeDTO.getUserName());
+            employee.setEmail(employeeDTO.getEmail());
             employee.setPassword(encoder.encode(employeeDTO.getPassword()));
             employee.setAge(employeeDTO.getAge());
             employee.setAddress(employeeDTO.getAddress());
@@ -54,6 +56,13 @@ public class EmployeeServiceImpl implements EmployeeService{
             employee.setRole(role);
             employee.setIsDeleted(false);
             employee.setAvatar(employeeDTO.getAvatar());
+
+            if (employeeDTO.getType() == 0){
+                employee.setEmployeeType(Employee.EmployeeType.HAIR_STYLIST_STAFF);
+            } else {
+                employee.setEmployeeType(Employee.EmployeeType.SPA_STAFF);
+            }
+
             employee.setAccount(savedAccount);
 
             employeeRepo.save(employee);

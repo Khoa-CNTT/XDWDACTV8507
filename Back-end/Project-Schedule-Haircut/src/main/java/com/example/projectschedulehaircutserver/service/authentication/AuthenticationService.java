@@ -12,7 +12,7 @@ import com.example.projectschedulehaircutserver.response.AuthenticationResponse;
 public interface AuthenticationService {
     String registerUser(RegisterRequest request) throws RegisterException;
 
-    AuthenticationResponse authenticate(LoginRequest request) throws LoginException;
+    AuthenticationResponse authenticate(LoginRequest request) ;
 
     AuthenticationResponse refreshToken(RefreshTokenRequest request) throws RefreshTokenException;
 

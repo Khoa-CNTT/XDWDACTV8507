@@ -20,8 +20,9 @@ export const logout = createAsyncThunk(
         try {
             const response = await axiosClient.get('/web/logout');
 
-            return response.data;
+            return response;
         } catch (error) {
+            console.error("API error:", error);
             return rejectWithValue(error);
         }
     }
@@ -32,20 +33,10 @@ export const register = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const response = await axiosClient.post('/web/register', userData);
-            return response.data;
+            return response;
         } catch (error) {
             console.error("API error:", error);
-
-            if (error) {
-                return rejectWithValue({
-                    message: error.message
-                });
-            }
-
-            // Fallback: trả về lỗi mặc định
-            return rejectWithValue({
-                message: 'Đăng ký thất bại lỗi không xác định'
-            });
+            return rejectWithValue(error);
         }
     }
 );
@@ -111,7 +102,7 @@ const authSlice = createSlice({
             .addCase(register.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
-                state.user = { username: action.payload };
+                state.user = action.payload;
             })
             .addCase(register.rejected, (state, action) => {
                 state.loading = false;

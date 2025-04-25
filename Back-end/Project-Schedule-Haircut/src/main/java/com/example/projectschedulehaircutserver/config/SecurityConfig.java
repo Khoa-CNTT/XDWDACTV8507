@@ -1,7 +1,6 @@
 package com.example.projectschedulehaircutserver.config;
 
 import com.example.projectschedulehaircutserver.filter.JwtAuthenticationFilter;
-import com.example.projectschedulehaircutserver.filter.JwtAuthorizationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +26,19 @@ import java.util.List;
 public class SecurityConfig {
     private final AuthenticationProvider provider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");//url của react js
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        source.registerCorsConfiguration("/socket.io/?EIO=4&transport=polling&t=OiybJbh",configuration);
         return source;
     }
+
     @Bean
     public SecurityFilterChain filterChain(@NonNull HttpSecurity http) throws Exception {
         http
@@ -48,20 +47,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/home/**", "/web/**").permitAll()
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
-                        .requestMatchers("/customer/**").hasRole("USER")
+                        .requestMatchers("/customer/**").hasAnyAuthority("ROLE_USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .sessionManagement((sessionmanagement) -> sessionmanagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(provider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthorizationFilter, JwtAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\":\"Lỗi xác thực\",\"message\":\"Vui lòng đăng nhập để tiếp tục\"}");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write("{\"error\":\"Từ chối truy cập\",\"message\":\"Bạn không có quyền truy cập tài nguyên này\"}");
                         })
                 );
 

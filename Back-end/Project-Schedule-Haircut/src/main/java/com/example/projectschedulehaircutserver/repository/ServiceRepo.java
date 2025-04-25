@@ -15,9 +15,16 @@ public interface ServiceRepo extends JpaRepository<Service, Integer> {
     @Query("select s from Service s where s.id = :id")
     Optional<Service> findServiceById(@Param("id") Integer id);
 
-    @Query("select new com.example.projectschedulehaircutserver.dto.ServiceDTO(s.id, s.name, s.price, s.haircutTime) from Service s")
+    @Query("select new com.example.projectschedulehaircutserver.dto.ServiceDTO(s.id, s.name, s.image, s.price, s.haircutTime) " +
+            "from Service s")
     Set<ServiceDTO> findAllService();
 
     @Query(value = "CALL findAllServiceByComboId(:comboId)", nativeQuery = true)
     List<Object[]> findAllServiceByComboId(@Param("comboId") Integer comboId);
+
+    @Query("select new com.example.projectschedulehaircutserver.dto.ServiceDTO(s.id, s.name, s.image, s.price, s.haircutTime) " +
+            "from Service s " +
+            "JOIN Category c ON c.id = s.category.id " +
+            "WHERE c.id = :categoryId")
+    Set<ServiceDTO> findAllServiceByCategoryId(@Param("categoryId") Integer categoryId);
 }

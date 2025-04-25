@@ -5,7 +5,6 @@ import {
     changePassword as changePasswordAction,
     clearPasswordState
 } from '../stores/slices/passwordSlice';
-import { toast } from 'react-toastify';
 
 const usePasswordService = () => {
     const dispatch = useDispatch();
@@ -13,24 +12,23 @@ const usePasswordService = () => {
     const requestChangePassword = async (email) => {
         try {
             dispatch(clearPasswordState());
-            const result = await dispatch(requestChangePasswordAction(email)).unwrap();
-            toast.success('Mã OTP đã được gửi');
-            return result;
+            const resultAction = await dispatch(requestChangePasswordAction(email));
+            if (requestChangePasswordAction.fulfilled.match(resultAction)) {
+                return resultAction.payload;
+            } else if (requestChangePasswordAction.rejected.match(resultAction)) {
+                throw resultAction.payload; // Ném lỗi từ server
+            }
         } catch (error) {
-            toast.error(error.message || 'Lỗi gửi OTP');
-            throw error;
+            throw error; // Truyền lỗi lên component
         }
     };
 
     const changePassword = async (data) => {
         try {
             dispatch(clearPasswordState());
-            const result = await dispatch(changePasswordAction(data)).unwrap();
-            toast.success('Đổi mật khẩu thành công');
-            return result;
+            await dispatch(changePasswordAction(data));
         } catch (error) {
-            toast.error(error.message || 'Đổi mật khẩu thất bại');
-            throw error;
+            throw new error;
         }
     };
 

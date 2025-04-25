@@ -55,6 +55,9 @@ public class Account implements UserDetails {
     @Column(name = "phone", nullable = false, length = 10, unique = true)
     private String phone;
 
+    @Column(name = "avatar", nullable = true)
+    private String avatar;
+
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -78,7 +81,7 @@ public class Account implements UserDetails {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "account")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private Customer customer;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "account")

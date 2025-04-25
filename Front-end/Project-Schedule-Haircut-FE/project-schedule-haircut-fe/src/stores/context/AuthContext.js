@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializeAuth } from '../slices/authSlice';
 import axiosClient from '../../config/axios';
+import { ClipLoader } from 'react-spinners';
 
 const AuthContext = createContext();
 
@@ -13,7 +14,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(reduxUser);
 
     useEffect(() => {
-        // Cập nhật user context mỗi khi redux thay đổi
         setUser(reduxUser);
     }, [reduxUser]);
 
@@ -73,7 +73,31 @@ export const AuthProvider = ({ children }) => {
             loading,
             dispatch: reduxDispatch
         }}>
-            {loading ? <div>Đang kiểm tra đăng nhập...</div> : children}
+            {
+                loading ?
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100vh',
+                        width: '100vw',
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        zIndex: 9999,
+                        flexDirection: 'column'
+                    }}>
+                        <ClipLoader color="#15397F" size={50} />
+                        <p style={{
+                            marginTop: '20px',
+                            color: '#15397F',
+                            fontSize: '16px',
+                            fontWeight: 500
+                        }}>Đang kiểm tra đăng nhập...</p>
+                    </div>
+                    : children
+            }
         </AuthContext.Provider>
     );
 };

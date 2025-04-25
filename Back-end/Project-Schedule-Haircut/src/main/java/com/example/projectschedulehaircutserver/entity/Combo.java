@@ -31,6 +31,9 @@ public class Combo {
     @Column(name = "haircut_time", nullable = false)
     private Integer haircutTime;
 
+    @Column(name = "image", nullable = false)
+    private String image;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;

@@ -15,7 +15,10 @@ const useAuthService = () => {
             if (loginAction.fulfilled.match(resultAction)) {
                 return resultAction.payload;
             } else {
-                throw resultAction.payload;
+                const errorMsg = resultAction.payload?.response?.data?.message
+                    || resultAction.payload?.message
+                    || 'Đăng nhập thất bại';
+                throw new Error(errorMsg);
             }
         } catch (error) {
             throw error;
@@ -36,23 +39,18 @@ const useAuthService = () => {
                 throw resultAction.payload;
             }
         } catch (error) {
-            console.error('Logout failed:', error);
-            throw error;
+            throw new Error(error.message || 'Đăng xuất thất bại');
         }
     };
 
     const register = async (userData) => {
         try {
             dispatch(clearError());
-            const resultAction = await dispatch(registerAction(userData)).unwrap();
-            if (registerAction.fulfilled.match(resultAction)) {
-                toast.success('Đăng ký thành công!');
-                return resultAction.payload;
-            } else {
-                throw resultAction.payload;
-            }
+            await dispatch(registerAction(userData)).unwrap();
+            toast.success('Đăng ký thành công');
+            navigate('/home');
         } catch (error) {
-            toast.error(error.message);
+            throw error;
         }
     };
 

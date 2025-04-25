@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import '../assets/css/Login.css'; // Import your CSS file for styling
+import '../assets/css/Login.css';
 import useAuthService from '../services/authService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { initializeAuth } from '../stores/slices/authSlice';
-
 
 const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) => {
     const [credentials, setCredentials] = useState({
@@ -15,6 +14,7 @@ const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) =>
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const { login } = useAuthService();
     const dispatch = useDispatch();
 
@@ -32,8 +32,12 @@ const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) =>
         }));
     };
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    const handleLogin = async () => {
+        if (!credentials.userName || !credentials.password) {
+            setError('Vui lòng nhập đầy đủ thông tin');
+            return;
+        }
+
         setError('');
         setIsLoading(true);
 
@@ -49,21 +53,30 @@ const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) =>
                 onClose();
             }
         } catch (error) {
-            console.error('Login error:', error);
-            setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+            toast.error(error.message || 'Đăng nhập thất bại.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(prev => !prev);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
         }
     };
 
     return (
         <div className="login-container">
             <button className="close-button" onClick={onClose}>×</button>
-            <h2>ĐĂNG NHẬP</h2>
+            <h2 className="login-title">ĐĂNG NHẬP</h2>
 
             {error && <div className="error-message">{error}</div>}
 
-            <form onSubmit={handleLogin}>
+            <div className="login-fields">
                 <div className="input-group">
                     <span className="icon">
                         <FontAwesomeIcon icon={faUser} />
@@ -74,7 +87,9 @@ const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) =>
                         placeholder="Username"
                         value={credentials.userName}
                         onChange={handleInputChange}
+                        onKeyPress={handleKeyPress}
                         required
+                        disabled={isLoading}
                     />
                 </div>
                 <div className="input-group">
@@ -82,32 +97,44 @@ const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) =>
                         <FontAwesomeIcon icon={faLock} />
                     </span>
                     <input
-                        type="password"
+                        type={passwordVisible ? "text" : "password"}
                         name="password"
                         placeholder="Password"
                         value={credentials.password}
                         onChange={handleInputChange}
+                        onKeyPress={handleKeyPress}
                         required
+                        disabled={isLoading}
                     />
+                    <span
+                        className="password-toggle"
+                        onClick={togglePasswordVisibility}
+                        style={isLoading ? { pointerEvents: 'none', opacity: 0.5 } : {}}
+                    >
+                        <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
+                    </span>
                 </div>
                 <a
                     href="#"
                     className="forgot-password"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        onSwitchToForgotPassword();
-                    }}
+                    onClick={onSwitchToForgotPassword}
+                    style={isLoading ? { pointerEvents: 'none', opacity: 0.5 } : {}}
                 >
                     Quên mật khẩu?
                 </a>
                 <button
-                    type="submit"
                     className="login-button"
+                    onClick={handleLogin}
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                    {isLoading ? (
+                        <>
+                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            {' '}Đang đăng nhập...
+                        </>
+                    ) : 'Đăng nhập'}
                 </button>
-            </form>
+            </div>
 
             <div className="register-link">
                 Bạn chưa có tài khoản?{' '}
@@ -115,8 +142,9 @@ const LoginForm = ({ onClose, onSwitchToRegister, onSwitchToForgotPassword }) =>
                     href="#"
                     onClick={(e) => {
                         e.preventDefault();
-                        onSwitchToRegister();
+                        if (!isLoading) onSwitchToRegister();
                     }}
+                    style={isLoading ? { pointerEvents: 'none', opacity: 0.5 } : {}}
                 >
                     Đăng ký ngay
                 </a>

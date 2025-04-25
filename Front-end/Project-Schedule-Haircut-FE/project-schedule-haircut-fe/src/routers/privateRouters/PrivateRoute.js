@@ -10,7 +10,7 @@ const PrivateRoute = ({ children }) => {
 
     useEffect(() => {
         if (!token && !hasWarned.current) {
-            toast.warn('Bạn cần đăng nhập để truy cập giỏ hàng');
+            toast.warn('Bạn cần đăng nhập để truy cập vào trang này');
             hasWarned.current = true; // Đánh dấu đã toast
             setTimeout(() => {
                 setRedirect(true);

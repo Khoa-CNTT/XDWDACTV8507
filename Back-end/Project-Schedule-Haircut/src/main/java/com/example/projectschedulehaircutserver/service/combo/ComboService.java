@@ -6,4 +6,6 @@ import java.util.Set;
 
 public interface ComboService {
     Set<ComboDTO> findAllCombo();
+
+    Set<ComboDTO> findAllComboByCategoryId(Integer categoryId);
 }

@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,4 +31,13 @@ public class ProductServiceImpl implements ProductService{
                 .map(ShowAllServiceByComboIdResponse::new)
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public Set<ServiceDTO> findAllServiceByCategoryId(Integer categoryId) {
+        return serviceRepo.findAllServiceByCategoryId(categoryId).stream()
+                .sorted(Comparator.comparing(ServiceDTO::getId))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+
 }

@@ -13,6 +13,13 @@ public interface ComboRepo extends JpaRepository<Combo, Integer> {
     @Query("select c from Combo c where c.id = :id")
     Combo findComboById(@Param("id") Integer id);
 
-    @Query("select new com.example.projectschedulehaircutserver.dto.ComboDTO(c.id, c.name, c.price, c.haircutTime) from Combo c")
+    @Query("select new com.example.projectschedulehaircutserver.dto.ComboDTO(c.id, c.name,  c.image, c.price, c.haircutTime) " +
+            "from Combo c")
     Set<ComboDTO> findAllCombo();
+
+    @Query("select new com.example.projectschedulehaircutserver.dto.ComboDTO(c.id, c.name,  c.image, c.price, c.haircutTime) " +
+            "from Combo c " +
+            "JOIN Category ct ON ct.id = c.category.id " +
+            "WHERE ct.id = :categoryId")
+    Set<ComboDTO> findAllComboByCategoryId(@Param("categoryId") Integer categoryId);
 }

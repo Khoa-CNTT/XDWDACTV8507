@@ -24,37 +24,31 @@ public class RefreshTokenController {
     private final CookieUtil cookieUtil;
 
     @GetMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest servletRequest, HttpServletResponse response) {
-        try {
-            Cookie[] cookies = servletRequest.getCookies();
-            if (cookies == null) {
-                throw new RefreshTokenException("Cookies are null");
-            }
+    public ResponseEntity<?> refreshToken(HttpServletRequest servletRequest, HttpServletResponse response) throws RefreshTokenException {
+        String refreshToken = extractRefreshTokenFromCookies(servletRequest.getCookies());
 
-            String refreshToken = null;
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("refreshToken")) {
-                    refreshToken = cookie.getValue();
-                }
-            }
-
-            if (refreshToken != null && !refreshToken.isEmpty()) {
-                var refreshTokenRequest = RefreshTokenRequest.builder()
-                        .refreshToken(refreshToken)
-                        .build();
-                AuthenticationResponse authenticationResponse = authenticationService.refreshToken(refreshTokenRequest);
-                cookieUtil.saveAccessTokenCookie(response, authenticationResponse);
-                return ResponseEntity.status(200).body(authenticationResponse);
-            } else {
-                throw new RefreshTokenException("Refresh token is empty or null");
-            }
-        } catch (RefreshTokenException e) {
-//            var authenticationResponse = AuthenticationResponse.builder()
-//                    .token(null)
-//                    .refreshToken(null)
-//                    .build();
-//            cookieUtil.generatorTokenCookie(response, authenticationResponse);
-            return ResponseEntity.status(401).body(e.getMessage());
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new RefreshTokenException("Refresh token hết hạn hoặc rỗng");
         }
+
+        var refreshTokenRequest = RefreshTokenRequest.builder()
+                .refreshToken(refreshToken)
+                .build();
+
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(refreshTokenRequest);
+        cookieUtil.saveAccessTokenCookie(response, authenticationResponse);
+        return ResponseEntity.ok(authenticationResponse);
     }
+
+    private String extractRefreshTokenFromCookies(Cookie[] cookies) {
+        if (cookies == null) return null;
+
+        for (Cookie cookie : cookies) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
 }

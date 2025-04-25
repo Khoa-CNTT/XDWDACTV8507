@@ -20,14 +20,8 @@ public class RegisterController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register_customer(@RequestBody RegisterRequest UserRegisterRequest){
-        try{
-            String message = authenticationService.registerUser(UserRegisterRequest);
-            return ResponseEntity.status(HttpStatus.OK).body(message);
-        } catch (RegisterException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", e.getMessage())); // Trả về JSON có key "message"
-        }
+    public ResponseEntity<?> register_customer(@RequestBody RegisterRequest userRegisterRequest) throws RegisterException {
+        String message = authenticationService.registerUser(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }

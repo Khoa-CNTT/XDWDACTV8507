@@ -19,7 +19,6 @@ import useScrollAnimation from "../components/useScrollAnimation";
 
 const Home = () => {
     const addToRefs = useScrollAnimation();
-    const [showAuthModal, setShowAuthModal] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
     const dispatch = useDispatch();
     const { categories, loading, error } = useSelector(state => state.categories);
@@ -46,21 +45,11 @@ const Home = () => {
         console.log('Số điện thoại:', phoneNumber);
     };
 
-    useEffect(() => {
-        document.body.style.overflow = showAuthModal ? 'hidden' : 'unset';
-    }, [showAuthModal]);
 
     return (
         <div>
             {/* Header */}
-            <Header setShowLoginForm={setShowAuthModal} />
-
-            {/* Login Form */}
-            {showAuthModal && (
-                <div className="overlay">
-                    <AuthModal onClose={() => setShowAuthModal(false)} />
-                </div>
-            )}
+            <Header />
 
             {/* Banner */}
             <section className="banner" ref={addToRefs}>
@@ -72,7 +61,7 @@ const Home = () => {
                 <div className="booking-box">
                     <h2>Đặt lịch giữ chỗ chỉ 30 giây</h2>
                     <p>Cắt xong trả tiền, hủy lịch không sao</p>
-                    <div className="booking-form">
+                    <div className="booking-form-home">
                         <input
                             type="text"
                             placeholder="Nhập SĐT để đặt lịch"
@@ -150,7 +139,12 @@ const Home = () => {
 
             {/* Footer */}
             <Footer />
+
+            {/* Auth Modal */}
+            <AuthModal />
+
         </div>
+
     );
 };
 

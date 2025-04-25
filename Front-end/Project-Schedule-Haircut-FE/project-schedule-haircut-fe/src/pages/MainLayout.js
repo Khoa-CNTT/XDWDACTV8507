@@ -5,6 +5,7 @@ import FloatingWidgets from '../components/FloatingWidgets';
 const MainLayout = ({ children }) => {
     return (
         <>
+            {/* <Header /> */}
             {children}
             <FloatingWidgets />
         </>

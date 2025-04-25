@@ -25,7 +25,7 @@ public class Customer extends Account{
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "customer")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer")

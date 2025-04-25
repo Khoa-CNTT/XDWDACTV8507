@@ -13,8 +13,14 @@ import java.util.Set;
 @Entity
 @Table(name = "employee")
 public class Employee extends Account {
-    @Column(name = "avatar", nullable = false)
-    private String avatar;
+    public enum EmployeeType {
+        HAIR_STYLIST_STAFF,
+        SPA_STAFF
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EmployeeType employeeType;
 
     @Column(name = "isDeleted")
     private Boolean isDeleted;

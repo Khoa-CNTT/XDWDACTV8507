@@ -10,4 +10,6 @@ public interface ProductService {
 
 
     Set<ShowAllServiceByComboIdResponse> findAllServiceByComboId(Integer id);
+
+    Set<ServiceDTO> findAllServiceByCategoryId(Integer categoryId);
 }
