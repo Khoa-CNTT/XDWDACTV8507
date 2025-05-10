@@ -2,28 +2,91 @@ import React, { useEffect, useState } from 'react';
 import '../assets/css/Profile.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Cookies from 'js-cookie'; // import js-cookie
-import useProfileService from '../services/profileService'; // import useProfileService
+import Cookies from 'js-cookie';
+import useProfileService from '../services/profileService';
 import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
+
 const Profile = () => {
-    const [profile, setProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const { getProfile } = useProfileService();
+    const [formData, setFormData] = useState({
+        email: '',
+        phone: '',
+        address: ''
+    });
+
+    const {
+        getProfile,
+        updateProfileService,
+        profileSelector
+    } = useProfileService();
+
+    const { loading, profile, error } = profileSelector;
+
     useEffect(() => {
         const fetchData = async () => {
             const username = Cookies.get('username');
             try {
                 const data = await getProfile(username);
-                setProfile(data);
+
+                setFormData({
+                    email: data.email || '',
+                    phone: data.phone || '',
+                    address: data.address || ''
+                });
             } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu:", error);
-            } finally {
-                setLoading(false);
+                console.log(error.message || 'Lỗi khi lấy thông tin người dùng');
+
             }
         };
 
         fetchData();
     }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const validateForm = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+
+        if (!emailRegex.test(formData.email)) {
+            toast.error('Email không hợp lệ');
+            return false;
+        }
+
+        if (!phoneRegex.test(formData.phone)) {
+            toast.error('Số điện thoại không hợp lệ');
+            return false;
+        }
+
+        if (formData.address.trim() === '') {
+            toast.error('Vui lòng nhập địa chỉ');
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        try {
+            await updateProfileService(formData);
+
+            const username = Cookies.get('username');
+            await getProfile(username);
+        } catch (error) {
+            toast.error(error.message || 'Cập nhật thất bại');
+        }
+    };
+
 
     if (loading) {
         return (
@@ -43,21 +106,21 @@ const Profile = () => {
             <main>
                 <div className="profile">
                     <h2>Hồ Sơ Của Tôi</h2>
-                    {/* <p className="description">Quản lý thông tin hồ sơ để bảo mật tài khoản</p> */}
                     <div className="content">
-                        <form className="profile__form-panel">
+                        <form className="profile__form-panel" onSubmit={handleSubmit}>
                             <div className="profile__form-group">
                                 <label>Tên đăng nhập</label>
-                                <span>{profile.userName}</span>
+                                <span>{profile?.userName}</span>
                             </div>
 
                             <div className="profile__form-group">
                                 <label>Email</label>
                                 <input
                                     type="email"
-                                    value={profile.email || ''}
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
                                     placeholder="Hãy nhập email của bạn"
-                                    readOnly
                                 />
                             </div>
 
@@ -65,9 +128,10 @@ const Profile = () => {
                                 <label>Số điện thoại</label>
                                 <input
                                     type="text"
-                                    value={profile.phone || ''}
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
                                     placeholder="Hãy nhập số điện thoại của bạn"
-                                    readOnly
                                 />
                             </div>
 
@@ -75,19 +139,30 @@ const Profile = () => {
                                 <label>Địa chỉ</label>
                                 <input
                                     type="text"
-                                    value={profile.address || ''}
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleInputChange}
                                     placeholder="Hãy nhập địa chỉ của bạn"
-                                    readOnly
                                 />
                             </div>
 
-                            <button type="submit" className="save-btn">Lưu</button>
+                            <button
+                                type="submit"
+                                className="save-btn"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <ClipLoader size={20} color="#fff" />
+                                ) : (
+                                    'Lưu'
+                                )}
+                            </button>
                         </form>
 
                         <div className="profile__form-avatar">
                             <div className="avatar">
                                 <img
-                                    src={profile.avatar || "https://via.placeholder.com/150"}
+                                    src={profile?.avatar}
                                     alt="Ảnh người dùng"
                                 />
                             </div>

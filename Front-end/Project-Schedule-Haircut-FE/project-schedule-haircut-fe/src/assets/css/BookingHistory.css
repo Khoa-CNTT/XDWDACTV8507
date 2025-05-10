@@ -8,6 +8,7 @@
     font-family: 'Segoe UI', sans-serif;
     background-color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    user-select: none;
 }
 
 .booking-history h2 {
@@ -126,21 +127,63 @@
     color: #0A2A7C;
 }
 
-.price-action button {
+/* Nút Thanh toán */
+.payment-button {
     background: linear-gradient(to right, #0A2A7C, #1e56c5);
+    min-width: 120px; /* Cố định chiều rộng tối thiểu */
+    padding: 8px 16px;
+}
+
+/* Nút Huỷ lịch */
+.cancel-button {
+    background: #dc3545;
+    min-width: 100px;
+    padding: 8px 16px;
+}
+
+/* Nút Đánh giá */
+.review-button {
+    background: #28a745;
+    min-width: 100px;
+    padding: 8px 16px;
+}
+
+/* Chung cho tất cả nút */
+.price-action button {
     color: white;
     border: none;
-    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(10, 42, 124, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 36px; /* Cố định chiều cao */
 }
 
-.price-action button:hover {
+/* Loading state - giữ nguyên kích thước */
+.price-action button:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+    background: #6c757d;
+    min-width: inherit; /* Kế thừa min-width từ lớp cha */
+}
+
+/* Hiệu ứng hover */
+.payment-button:hover:not(:disabled),
+.cancel-button:hover:not(:disabled),
+.review-button:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(10, 42, 124, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Spinner căn giữa */
+.price-action button .clip-loader {
+    display: flex;
+    align-items: center;
 }
 
 /* Action Buttons */
@@ -183,6 +226,7 @@
     margin-top: 40px;
     font-weight: 500;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

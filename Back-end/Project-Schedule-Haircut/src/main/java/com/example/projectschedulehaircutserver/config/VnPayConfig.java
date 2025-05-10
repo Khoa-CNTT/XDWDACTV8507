@@ -1,75 +1,43 @@
 package com.example.projectschedulehaircutserver.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Getter
 @Component
 public class VnPayConfig {
+
     @Value("${vnpay.payurl}")
-    private String vnp_PayUrl;
+    private String vnpPayUrl;
 
     @Value("${vnpay.tmncode}")
-    private String vnp_TmnCode;
+    private String vnpTmnCode;
 
     @Value("${vnpay.secret}")
-    private String vnp_HashSecret;
+    private String vnpHashSecret;
 
     @Value("${vnpay.returnurl}")
-    private String vnp_ReturnUrl;
+    private String vnpReturnUrl;
 
+    @Value("${vnpay.callbackurl}")
+    private String vnpCallback;
 
-    public String getVnpPayUrl() {
-        return vnp_PayUrl;
-    }
-
-    public String getVnpTmnCode() {
-        return vnp_TmnCode;
-    }
-
-    public String getVnpHashSecret() {
-        return vnp_HashSecret;
-    }
-
-    public String getVnpReturnUrl() {
-        return vnp_ReturnUrl;
-    }
-
-    // Phương thức hashAllFields
-    public String hashAllFields(Map<String, String> fields) {
-        List<String> fieldNames = new ArrayList<>(fields.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder sb = new StringBuilder();
-        Iterator<String> itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = itr.next();
-            String fieldValue = fields.get(fieldName);
-            if (fieldValue != null && !fieldValue.isEmpty()) {
-                sb.append(fieldName).append("=").append(fieldValue);
-                if (itr.hasNext()) {
-                    sb.append("&");
-                }
-            }
-        }
-        return hmacSHA512(vnp_HashSecret, sb.toString());
-    }
-
-    // Phương thức hmacSHA512
-    public String hmacSHA512(final String key, final String data) {
+    public String hmacSHA512(final String data) {
         try {
-            if (key == null || data == null) {
-                throw new NullPointerException("Key and data must not be null");
-            }
             Mac hmac512 = Mac.getInstance("HmacSHA512");
-            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "HmacSHA512");
+            SecretKeySpec secretKey = new SecretKeySpec(vnpHashSecret.getBytes(), "HmacSHA512");
             hmac512.init(secretKey);
             byte[] result = hmac512.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder(2 * result.length);
+            StringBuilder sb = new StringBuilder();
             for (byte b : result) {
                 sb.append(String.format("%02x", b & 0xff));
             }
@@ -79,23 +47,43 @@ public class VnPayConfig {
         }
     }
 
-    // Phương thức getIpAddress
     public String getIpAddress(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-FORWARDED-FOR");
-        if (ipAddress == null) {
-            ipAddress = request.getRemoteAddr();
-        }
-        return ipAddress;
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        return ip != null ? ip : request.getRemoteAddr();
     }
 
-    // Phương thức getRandomNumber
-    public String getRandomNumber(int len) {
-        Random rnd = new Random();
-        String chars = "0123456789";
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+    public String buildPaymentUrl(Map<String, String> params) {
+        List<String> fieldNames = new ArrayList<>(params.keySet());
+        Collections.sort(fieldNames);
+
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+
+        try {
+            for (String fieldName : fieldNames) {
+                String fieldValue = params.get(fieldName);
+                if (fieldValue != null && !fieldValue.isEmpty()) {
+                    // Build hash data
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
+
+                    // Build query URL
+                    query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8.toString()));
+                    query.append('=');
+                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()));
+
+                    if (fieldNames.indexOf(fieldName) < fieldNames.size() - 1) {
+                        hashData.append('&');
+                        query.append('&');
+                    }
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Encoding error", e);
         }
-        return sb.toString();
+
+        String secureHash = hmacSHA512(hashData.toString());
+        return vnpPayUrl + "?" + query.toString() + "&vnp_SecureHash=" + secureHash;
     }
 }

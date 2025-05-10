@@ -5,83 +5,56 @@ export const createVnPayPayment = createAsyncThunk(
     'vnpay/createPayment',
     async ({ amount, orderInfo }, { rejectWithValue }) => {
         try {
-            const response = await axiosClient.get('/customer/payment/create-payment', {
-                params: { amount, orderInfo }
+            const response = await axiosClient.get('/customer/vnpay/create', {
+                params: {
+                    amount: amount * 100, // Convert to VND
+                    orderInfo
+                }
             });
 
-            // Thêm console.log để debug
-            console.log('VNPay response:', response.data);
-
-            return response;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
-        }
-    }
-);
-
-export const handlePaymentReturn = createAsyncThunk(
-    'vnpay/paymentReturn',
-    async (queryParams, { rejectWithValue }) => {
-        try {
-            const response = await axiosClient.get('/customer/payment/payment-return', {
-                params: queryParams
-            });
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
+            return rejectWithValue({
+                message: error.response?.data?.message || error.message,
+                code: error.response?.data?.code || 'UNKNOWN_ERROR'
+            });
         }
     }
 );
+
+const initialState = {
+    paymentUrl: null,
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    error: null,
+    paymentData: null
+};
 
 const vnpaySlice = createSlice({
     name: 'vnpay',
-    initialState: {
-        paymentUrl: null,
-        paymentResult: null,
-        loading: false,
-        error: null
-    },
+    initialState,
     reducers: {
-        clearVnPayState: (state) => {
-            state.paymentUrl = null;
-            state.paymentResult = null;
-            state.error = null;
-        },
-        resetPaymentResult: (state) => {
-            state.paymentResult = null;
+        resetVnPayState: () => initialState,
+        setPaymentStatus: (state, action) => {
+            state.status = action.payload;
         }
     },
     extraReducers: (builder) => {
         builder
-            // Create Payment
             .addCase(createVnPayPayment.pending, (state) => {
-                state.loading = true;
+                state.status = 'loading';
                 state.error = null;
             })
             .addCase(createVnPayPayment.fulfilled, (state, action) => {
-                state.loading = false;
+                state.status = 'succeeded';
                 state.paymentUrl = action.payload.data;
+                state.paymentData = action.payload;
             })
             .addCase(createVnPayPayment.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-
-            // Handle Payment Return
-            .addCase(handlePaymentReturn.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(handlePaymentReturn.fulfilled, (state, action) => {
-                state.loading = false;
-                state.paymentResult = action.payload;
-            })
-            .addCase(handlePaymentReturn.rejected, (state, action) => {
-                state.loading = false;
+                state.status = 'failed';
                 state.error = action.payload;
             });
     }
 });
 
-export const { clearVnPayState, resetPaymentResult } = vnpaySlice.actions;
+export const { resetVnPayState, setPaymentStatus } = vnpaySlice.actions;
 export default vnpaySlice.reducer;

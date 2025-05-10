@@ -1,0 +1,32 @@
+/* components/Management/Management.css */
+.management-container {
+    padding: 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+/* Calendar customization */
+.rbc-calendar {
+    min-height: 600px;
+}
+
+.rbc-event {
+    background-color: #1890ff;
+    border-radius: 4px;
+    padding: 2px 5px;
+}
+
+/* Chart container */
+.ant-column {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+}

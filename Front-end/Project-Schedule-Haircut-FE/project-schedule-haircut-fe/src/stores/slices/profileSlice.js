@@ -2,7 +2,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../config/axios';
 
-// Lấy thông tin profile người dùng
 export const fetchProfile = createAsyncThunk(
     'profile/fetchProfile',
     async (username, { rejectWithValue }) => {
@@ -16,6 +15,18 @@ export const fetchProfile = createAsyncThunk(
     }
 );
 
+
+export const updateProfile = createAsyncThunk(
+    'profile/updateProfile',
+    async (customerData, { rejectWithValue }) => {
+        try {
+            const response = await axiosClient.put('/customer/update-profile', customerData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 const profileSlice = createSlice({
     name: 'profile',
     initialState: {
@@ -42,6 +53,19 @@ const profileSlice = createSlice({
                 state.profile = action.payload;
             })
             .addCase(fetchProfile.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(updateProfile.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.profile = { ...state.profile, ...action.payload };
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

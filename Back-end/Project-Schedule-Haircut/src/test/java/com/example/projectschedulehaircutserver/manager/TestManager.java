@@ -13,7 +13,8 @@ public class TestManager {
 
     @Test
     void create(){
-         ManagerDTO managerDTO = new ManagerDTO("admin1", "12345", "nguyễn văn admin");
-         managerService.createManager(managerDTO, 3);
+//         ManagerDTO managerDTO = new ManagerDTO("admin1", "12345", "nguyễn văn admin");
+        ManagerDTO managerDTO = new ManagerDTO("admin2", "12345", "nguyễn văn admin");
+         managerService.createManager(managerDTO, 210001);
     }
 }

@@ -64,7 +64,7 @@ const VerifyCodeForm = ({ onBack, onSuccess }) => {
     return (
         <div className="verify-container">
             <div className="verify-header">
-                <button className="close-button" onClick={onBack} aria-label="Đóng">
+                <button className="close-button-verify" onClick={onBack} aria-label="Đóng">
                     &times;
                 </button>
                 <h2 className="verify-title">ĐỔI MẬT KHẨU</h2>

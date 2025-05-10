@@ -5,17 +5,20 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import haircutImg from '../assets/image/logo.png';
 import useBookedService from '../services/bookedService';
-import useVnPayService from '../services/vnpayService'; // Import the VNPay service
+import useVnPayService, { useVnPay } from '../services/vnpayService'; // Import the VNPay service
 import { ClipLoader } from 'react-spinners';
-import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import useOrderService from '../services/orderService';
 
 const BookingHistory = () => {
     const [bookings, setBookings] = useState([]);
     const [activeStatus, setActiveStatus] = useState(0); // 0: chờ xác nhận, 1: đã xác nhận, 2: đã hoàn thành
-    const [paymentLoading, setPaymentLoading] = useState(null); // Track which booking is being paid for
+    const [paymentLoading, setPaymentLoading] = useState(null);
+    const [cancelLoadingId, setCancelLoadingId] = useState(null);
     const { getBookedByStatus } = useBookedService();
     const { loading, error } = useSelector((state) => state.booked);
-    const { createPayment } = useVnPayService(); // Get the createPayment function from the service
+    const { cancelOrder } = useOrderService();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,22 +43,34 @@ const BookingHistory = () => {
         return timeString.substring(0, 5);
     };
 
-    const handlePayment = async (booking) => {
-        setPaymentLoading(booking.id); // Set loading state for this specific booking
-        try {
-            const orderInfo = `Thanh toán cho đơn đặt lịch #${booking.id}`;
-
-            // Kiểm tra totalPrice hợp lệ
-            if (!booking.totalPrice || booking.totalPrice <= 0) {
-                throw new Error('Số tiền thanh toán không hợp lệ');
+    const handlePayment = (booking) => {
+        // Chuyển hướng đến trang thanh toán và truyền state
+        navigate(`/payment/${booking.id}`, {
+            state: {
+                bookingDetails: booking,
+                serviceInfo: {
+                    employee: booking.employeeName.join(', '),
+                    service: booking.serviceName.join(', '),
+                    date: formatDate(booking.orderDate),
+                    time: `${formatTime(booking.orderStartTime)} - ${formatTime(booking.orderEndTime)}`
+                }
             }
+        });
+    };
 
-            await createPayment(booking.totalPrice, orderInfo);
+    const handleCancel = async (bookingId, status) => {
+        setCancelLoadingId(bookingId);
+        try {
+            console.log(bookingId, status);
+
+            await cancelOrder(bookingId, status);
+
+            const data = await getBookedByStatus(activeStatus);
+            setBookings(data);
         } catch (error) {
-            console.error('Payment error:', error);
-            toast.error(error.message || 'Thanh toán thất bại');
+            console.error(error);
         } finally {
-            setPaymentLoading(null);
+            setCancelLoadingId(null);
         }
     };
 
@@ -131,18 +146,37 @@ const BookingHistory = () => {
                                         </div>
                                     </div>
                                     <div className="price-action">
-                                        <span>{booking.totalPrice.toLocaleString()}đ</span>
+                                        <span>{booking.totalPrice.toLocaleString()} VNĐ</span>
+                                        {activeStatus === 0 && (
+                                            <button
+                                                onClick={() => handleCancel(booking.id, -1)}
+                                                disabled={cancelLoadingId === booking.id}
+                                                className="cancel-button"
+                                            >
+                                                {cancelLoadingId === booking.id ? (
+                                                    <ClipLoader size={20} color="#fff" />
+                                                ) : (
+                                                    'Huỷ lịch'
+                                                )}
+                                            </button>
+                                        )}
                                         {activeStatus === 1 && (
                                             <button
                                                 onClick={() => handlePayment(booking)}
                                                 disabled={paymentLoading === booking.id}
+                                                className="payment-button"
                                             >
                                                 {paymentLoading === booking.id ? (
                                                     <ClipLoader size={20} color="#fff" />
                                                 ) : 'Thanh toán'}
                                             </button>
                                         )}
-                                        {activeStatus === 2 && <button>Đánh giá</button>}
+
+                                        {activeStatus === 2 && (
+                                            <button className="review-button">
+                                                Đánh giá
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))

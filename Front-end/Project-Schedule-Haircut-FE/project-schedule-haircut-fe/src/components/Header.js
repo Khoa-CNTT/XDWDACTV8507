@@ -39,9 +39,6 @@ const Header = () => {
     const handleLoginClick = () => {
         dispatch(showAuthModal({
             form: 'login',
-            props: {
-                // Các props bổ sung nếu cần
-            }
         }));
     };
 
@@ -129,7 +126,7 @@ const Header = () => {
                 {/* Dropdown menu */}
                 {isAuthenticated && (
                     <div className={`dropdown-wrapper ${showDropdown ? 'open' : ''}`} ref={dropdownRef}>
-                        <div className="dropdown-menu">
+                        <div className="dropdown-menu-header">
                             <Link
                                 to="/profile"
                                 onClick={() => {

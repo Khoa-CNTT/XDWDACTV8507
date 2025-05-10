@@ -18,7 +18,7 @@ const HaircutDetail = () => {
             try {
                 const data = await getServicesAndCombos(categoryId);
                 setServiceData(data);
-                console.log(data);
+                // console.log(data);
 
             } catch (error) {
                 console.error("Failed to fetch service data:", error);

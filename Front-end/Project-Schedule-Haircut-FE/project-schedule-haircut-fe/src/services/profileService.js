@@ -1,13 +1,14 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchProfile,
     clearProfileError,
+    updateProfile
 } from '../stores/slices/profileSlice';
 import { toast } from 'react-toastify';
 
 const useProfileService = () => {
     const dispatch = useDispatch();
-
+    const profileSelector = useSelector((state) => state.profile);
     const getProfile = async (username) => {
         try {
             dispatch(clearProfileError());
@@ -27,8 +28,27 @@ const useProfileService = () => {
         }
     };
 
+    const updateProfileService = async (customerData) => {
+        try {
+            dispatch(clearProfileError());
+            const resultAction = await dispatch(updateProfile(customerData));
+
+            if (updateProfile.fulfilled.match(resultAction)) {
+                toast.success('Cập nhật hồ sơ thành công');
+                return resultAction.payload;
+            } else {
+                throw new Error(resultAction.payload?.message || 'Cập nhật thất bại');
+            }
+        } catch (error) {
+            toast.error(error.message || 'Lỗi khi cập nhật thông tin người dùng');
+            throw error;
+        }
+    };
+
     return {
         getProfile,
+        profileSelector,
+        updateProfileService
     };
 };
 

@@ -17,4 +17,6 @@ public interface CartService {
     Set<CartItemResponse> getCartItem() throws LoginException;
 
     Integer countCartItem();
+
+    void deleteCartItem(Set<Integer> cartItemIds);
 }

@@ -1,12 +1,17 @@
 import React from "react";
-import Header from "./Header";
-import Footer from "./Footer";
 import "../assets/css/ServiceDetail.css";
-import useCartService from "../services/cartService"; // Import cartService
+import useCartService from "../services/cartService";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
+import { useDispatch, useSelector } from "react-redux";
+import { showAuthModal } from "../stores/slices/actionFormSlice";
+import AuthModal from "./AuthModal";
 
 const ServiceDetail = ({ title, subtitle, services, combos }) => {
-    const { addCombo, addService } = useCartService(); // Sử dụng cartService
+    const { addCombo, addService } = useCartService();
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const [loadingId, setLoadingId] = React.useState(null);
+    const dispatch = useDispatch();
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat("vi-VN", {
@@ -15,29 +20,24 @@ const ServiceDetail = ({ title, subtitle, services, combos }) => {
         }).format(price);
     };
 
-    // Hàm thêm service vào giỏ hàng
-    const handleAddService = async (serviceId) => {
-        try {
-            const request = { serviceId };
-            const success = await addService(request);
-            if (success) {
-                toast.success("Đã thêm dịch vụ vào giỏ hàng");
-            }
-        } catch (error) {
-            toast.error(error.message || "Lỗi khi thêm dịch vụ vào giỏ hàng");
+    // Hàm xử lý chung cho cả service và combo
+    const handleAddItem = async (type, id, addFunction) => {
+        if (!isAuthenticated) {
+            dispatch(showAuthModal({ form: 'login' }));
+            return;
         }
-    };
 
-    // Hàm thêm combo vào giỏ hàng
-    const handleAddCombo = async (comboId) => {
         try {
-            const request = { comboId };
-            const success = await addCombo(request);
+            setLoadingId(`${type}-${id}`);
+            const request = { [`${type}Id`]: id };
+            const success = await addFunction(request);
             if (success) {
-                toast.success("Đã thêm combo vào giỏ hàng");
+                toast.success(`Đã thêm ${type === 'service' ? 'dịch vụ' : 'combo'} vào giỏ hàng`);
             }
         } catch (error) {
-            toast.error(error.message || "Lỗi khi thêm combo vào giỏ hàng");
+            console.log(error);
+        } finally {
+            setLoadingId(null);
         }
     };
 
@@ -68,15 +68,23 @@ const ServiceDetail = ({ title, subtitle, services, combos }) => {
                                 </div>
                             </div>
                             <div className="service-footer">
-                                <span className="time-badge">
-                                    {service.haircutTime} phút
-                                </span>
+                                <span className="time-badge">{service.haircutTime} phút</span>
                                 <button
                                     className="expand-btn"
-                                    onClick={() => handleAddService(service.id)}
+                                    onClick={() => handleAddItem('service', service.id, addService)}
+                                    disabled={!!loadingId} // Disable tất cả khi có bất kỳ item nào đang loading
                                     aria-label={`Thêm ${service.name} vào giỏ hàng`}
                                 >
-                                    +
+                                    {loadingId === `service-${service.id}` ? (
+                                        <ClipLoader
+                                            color="#004AAD"
+                                            size={15}
+                                            margin={2}
+                                            loading
+                                        />
+                                    ) : (
+                                        "+"
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -106,15 +114,23 @@ const ServiceDetail = ({ title, subtitle, services, combos }) => {
                                 </div>
                             </div>
                             <div className="combo-footer">
-                                <span className="time-badge">
-                                    {combo.haircutTime} phút
-                                </span>
+                                <span className="time-badge">{combo.haircutTime} phút</span>
                                 <button
                                     className="expand-btn"
-                                    onClick={() => handleAddCombo(combo.id)}
+                                    onClick={() => handleAddItem('combo', combo.id, addCombo)}
+                                    disabled={!!loadingId} // Disable tất cả khi có bất kỳ item nào đang loading
                                     aria-label={`Thêm ${combo.name} vào giỏ hàng`}
                                 >
-                                    +
+                                    {loadingId === `combo-${combo.id}` ? (
+                                        <ClipLoader
+                                            color="#004AAD"
+                                            size={15}
+                                            margin={2}
+                                            loading
+                                        />
+                                    ) : (
+                                        "+"
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -122,7 +138,7 @@ const ServiceDetail = ({ title, subtitle, services, combos }) => {
                 </div>
             </div>
 
-            <button className="booking-button">ĐẶT LỊCH NGAY</button>
+            <AuthModal />
         </section>
     );
 };

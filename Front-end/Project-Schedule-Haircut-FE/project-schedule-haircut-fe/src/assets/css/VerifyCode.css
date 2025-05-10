@@ -182,3 +182,27 @@
 .verify-content::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
 }
+
+.close-button-verify {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.25rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #718096;
+    cursor: pointer;
+}
+
+
+@media (min-width: 1200px) and (max-width: 1449px) {
+    .verify-title {
+        font-size: 1.3rem;
+    }
+
+    .close-button-verify {
+        top: -0.6rem;
+        right: -0.25rem;
+        font-size: 1.7rem;
+    }
+}

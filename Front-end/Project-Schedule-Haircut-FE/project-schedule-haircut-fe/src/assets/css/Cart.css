@@ -13,6 +13,31 @@
     border-radius: 8px;
 }
 
+.bulk-actions {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-delete-selected {
+    background: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-delete-selected:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+.btn-delete-selected:hover:not(:disabled) {
+    background: #bb2d3b;
+}
+
 .container__chart {
     width: 100%;
     border-collapse: separate;
@@ -26,6 +51,10 @@
 .container__header {
     background: #15397F;
     color: white;
+}
+
+.container__header:hover {
+    background: #15397F;
 }
 
 .container__header th {
@@ -170,18 +199,19 @@ input[type="checkbox"] {
 }
 
 /* Link xóa dịch vụ */
-td a {
+/* td a {
     color: #e74c3c;
     font-weight: 500;
     padding: 5px 10px;
     border-radius: 4px;
     transition: all 0.2s;
-}
+} */
 
+/* 
 td a:hover {
     background-color: #fde8e8;
     text-decoration: underline;
-}
+} */
 
 /* Responsive */
 @media (max-width: 768px) {

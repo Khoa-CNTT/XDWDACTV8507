@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional
-    public String BookingScheduleHaircut(OrderScheduleHaircutRequest request) throws LoginException, OrderException {
+    public String bookingScheduleHaircut(OrderScheduleHaircutRequest request) throws LoginException, OrderException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)){
             try {
@@ -186,6 +186,23 @@ public class OrderServiceImpl implements OrderService{
         } else {
             throw new LoginException("Bạn Chưa Đăng Nhập");
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateBookingStatus(Integer bookingId, Integer status) {
+        Orders orders = orderRepo.findOrderByOrderId(bookingId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        orders.setStatus(status);
+        orderRepo.save(orders);
+    }
+
+    @Override
+    public void cancelBooking(Integer bookingId, Integer status) {
+        Orders orders = orderRepo.findOrderByOrderId(bookingId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        orders.setStatus(status);
+        orderRepo.save(orders);
     }
 
     @Override

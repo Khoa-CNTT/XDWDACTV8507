@@ -22,7 +22,7 @@ public class BookingScheduleHaircutController {
     @PostMapping("/booking")
     public ResponseEntity<?> bookAppointment(@RequestBody OrderScheduleHaircutRequest request) throws LoginException, OrderException {
         try {
-            String message = orderService.BookingScheduleHaircut(request);
+            String message = orderService.bookingScheduleHaircut(request);
             return ResponseEntity.ok(message);
         } catch (LoginException | OrderException e) {
             throw e; // Để GlobalExceptionHandler xử lý

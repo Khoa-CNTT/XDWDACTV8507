@@ -52,6 +52,21 @@ export const countCartItems = createAsyncThunk(
     }
 );
 
+export const deleteCartItems = createAsyncThunk(
+    'cart/deleteItems',
+    async (cartItemIds, { rejectWithValue }) => {
+        try {
+            const response = await axiosClient.delete('/customer/delete-items', {
+                data: cartItemIds
+            });
+
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
@@ -61,20 +76,11 @@ const cartSlice = createSlice({
         lastUpdated: null,
         totalPrice: 0,
         totalTime: 0,
-        addStatus: 'idle',
-        itemCount: 0,
-        countStatus: 'idle',
+        itemCount: 0
     },
     reducers: {
         clearCartError: (state) => {
             state.error = null;
-        },
-        resetAddStatus: (state) => {
-            state.addStatus = 'idle';
-            state.error = null;
-        },
-        resetCountStatus: (state) => {
-            state.countStatus = 'idle';
         },
         clearCartItems: (state) => {
             state.items = [];
@@ -82,20 +88,9 @@ const cartSlice = createSlice({
             state.totalTime = 0;
             state.lastUpdated = null;
         },
-        updateCartItem: (state, action) => {
-            const { id, quantity } = action.payload;
-            const itemIndex = state.items.findIndex(item => item.id === id);
-            if (itemIndex !== -1) {
-                state.items[itemIndex].quantity = quantity;
-                state.totalPrice = state.items.reduce((sum, item) =>
-                    sum + (item.price * item.quantity), 0);
-                state.totalTime = state.items.reduce((sum, item) =>
-                    sum + (item.haircutTime * item.quantity), 0);
-            }
-        },
         removeCartItem: (state, action) => {
-            const id = action.payload;
-            state.items = state.items.filter(item => item.id !== id);
+            const cartItemId = action.payload;
+            state.items = state.items.filter(item => item.cartItemId !== cartItemId);
             state.totalPrice = state.items.reduce((sum, item) =>
                 sum + (item.price * item.quantity), 0);
             state.totalTime = state.items.reduce((sum, item) =>
@@ -110,69 +105,78 @@ const cartSlice = createSlice({
             })
             .addCase(getCartItems.fulfilled, (state, action) => {
                 state.loading = false;
-                if (Array.isArray(action.payload)) {
-                    state.items = action.payload;
-                    state.totalPrice = action.payload.reduce((sum, item) =>
-                        sum + (item?.price || 0), 0);
-                    state.totalTime = action.payload.reduce((sum, item) =>
-                        sum + (item?.haircutTime || 0), 0);
-                } else {
-                    state.items = [];
-                    state.totalPrice = 0;
-                    state.totalTime = 0;
-                }
+                state.items = action.payload || [];
+                state.totalPrice = action.payload?.reduce((sum, item) => sum + (item?.price || 0), 0) || 0;
+                state.totalTime = action.payload?.reduce((sum, item) => sum + (item?.haircutTime || 0), 0) || 0;
                 state.lastUpdated = new Date().toISOString();
-                state.error = null;
             })
             .addCase(getCartItems.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload?.message || 'Không thể lấy danh sách giỏ hàng';
+                state.error = action.payload?.message || 'Lỗi tải giỏ hàng';
             })
+
             .addCase(addComboToCart.pending, (state) => {
-                state.addStatus = 'loading';
+                state.loading = true;
                 state.error = null;
             })
             .addCase(addComboToCart.fulfilled, (state) => {
-                state.addStatus = 'succeeded';
+                state.loading = false;
             })
             .addCase(addComboToCart.rejected, (state, action) => {
-                state.addStatus = 'failed';
-                state.error = action.payload || 'Thêm combo vào giỏ hàng thất bại';
+                state.loading = false;
+                state.error = action.payload;
             })
+
             .addCase(addServiceToCart.pending, (state) => {
-                state.addStatus = 'loading';
+                state.loading = true;
                 state.error = null;
             })
             .addCase(addServiceToCart.fulfilled, (state) => {
-                state.addStatus = 'succeeded';
+                state.loading = false;
             })
             .addCase(addServiceToCart.rejected, (state, action) => {
-                state.addStatus = 'failed';
-                state.error = action.payload || 'Thêm dịch vụ vào giỏ hàng thất bại';
+                state.loading = false;
+                state.error = action.payload;
             })
 
             .addCase(countCartItems.pending, (state) => {
-                state.countStatus = 'loading';
+                state.loading = true;
+                state.error = null;
             })
             .addCase(countCartItems.fulfilled, (state, action) => {
-                state.countStatus = 'succeeded';
+                state.loading = false;
                 state.itemCount = action.payload;
             })
             .addCase(countCartItems.rejected, (state, action) => {
-                state.countStatus = 'failed';
-                state.error = action.payload || 'Đếm số lượng item thất bại';
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(deleteCartItems.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteCartItems.fulfilled, (state, action) => {
+                state.loading = false;
+                if (action.payload?.deletedIds) {
+                    state.items = state.items.filter(item =>
+                        !action.payload.deletedIds.includes(item.cartItemId)
+                    );
+                }
+                state.totalPrice = state.items.reduce((sum, item) => sum + item.price, 0);
+                state.totalTime = state.items.reduce((sum, item) => sum + item.haircutTime, 0);
+            })
+            .addCase(deleteCartItems.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || 'Xóa CartItem thất bại';
             });
     }
 });
 
-// Đảm bảo export tất cả actions cần thiết
 export const {
     clearCartError,
     clearCartItems,
-    updateCartItem,
     removeCartItem,
-    resetAddStatus,
-    resetCountStatus,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

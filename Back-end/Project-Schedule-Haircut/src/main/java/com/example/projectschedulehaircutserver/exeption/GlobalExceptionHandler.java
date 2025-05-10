@@ -1,5 +1,7 @@
 package com.example.projectschedulehaircutserver.exeption;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -99,6 +101,30 @@ public class GlobalExceptionHandler {
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Lỗi máy chủ không xác định: " + ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(CartItemException.class)
+    public ResponseEntity<Object> handleCartItemException(CartItemException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ComboException.class)
+    public ResponseEntity<Object> handleComboException(ComboException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<Object> handleEmptyResultDataAccess(EmptyResultDataAccessException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Không tìm thấy dữ liệu");
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<Object> handleDataAccessException(DataAccessException ex) {
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Lỗi hệ thống khi truy cập dữ liệu: " + ex.getMessage()
         );
     }
 

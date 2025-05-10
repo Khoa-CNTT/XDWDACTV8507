@@ -330,10 +330,31 @@
     cursor: pointer;
     padding: 0 10px;
     transition: transform 0.2s ease;
+    position: relative;
+    min-width: 30px;
 }
 
 .expand-btn:hover {
     transform: scale(1.2);
+}
+
+.expand-btn .ClipLoader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+button.expand-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+button.expand-btn:not(:disabled):hover {
+    /* background-color: #004AAD;
+    color: white; */
+    transform: scale(1.1);
 }
 
 .booking-button {
@@ -458,4 +479,17 @@
     to {
         transform: translate(-50%, -50%) rotate(360deg);
     }
+}
+
+/* Thêm vào cuối file ServiceDetail.css */
+.expand-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.expand-btn .react-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
 }

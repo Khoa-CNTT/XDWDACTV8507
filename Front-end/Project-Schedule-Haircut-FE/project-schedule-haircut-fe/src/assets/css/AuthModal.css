@@ -55,3 +55,58 @@
     transform: translateX(0);
     z-index: 1;
 }
+
+/* Màn hình điện thoại (≤ 480px) */
+@media (max-width: 480px) {
+    .auth-modal-container {
+        width: 90%;
+        height: auto;
+        min-height: unset;
+        padding: 1rem;
+        border-radius: 0;
+    }
+
+    .auth-form {
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* Màn hình laptop (481px - 1439px) */
+@media (min-width: 481px) and (max-width: 1439px) {
+    .auth-modal-container {
+        max-width: 400px;
+        height: 490px;
+        min-height: 350px;
+        padding: 2rem;
+    }
+
+    .auth-form {
+        padding: 2rem;
+    }
+}
+
+/* Màn hình 24 inch (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+    .auth-modal-container {
+        max-width: 480px;
+        height: 55vh;
+        padding: 2.5rem;
+    }
+
+    .auth-form {
+        padding: 2.5rem;
+    }
+}
+
+/* Màn hình 27 inch (≥ 1920px) */
+@media (min-width: 1920px) {
+    .auth-modal-container {
+        max-width: 520px;
+        height: 63vh;
+        padding: 3rem;
+    }
+
+    .auth-form {
+        padding: 3rem;
+    }
+}

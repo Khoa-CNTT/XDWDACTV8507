@@ -9,10 +9,9 @@ import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const { items, loading, error } = useSelector(state => state.cart);
-    const { fetchCartItems, updateItemQuantity, deleteItem } = useCartService();
+    const { fetchCartItems, deleteItems } = useCartService();
     const [selectedItems, setSelectedItems] = useState({});
     const [localLoading, setLocalLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -26,71 +25,50 @@ const Cart = () => {
         };
         loadCartItems();
     }, []);
-    console.log(items);
 
     useEffect(() => {
         if (items.length > 0) {
             const initialSelected = {};
             items.forEach(item => {
-                initialSelected[item.id] = true;
+                initialSelected[item.cartItemId] = true;
             });
             setSelectedItems(initialSelected);
         }
     }, [items]);
 
-    const handleCheckboxChange = (id) => {
-        const itemToSelect = items.find(item => item.id === id);
-
-        // Kiểm tra nếu item có "combo" trong tên và đang được chọn
-        if (itemToSelect.name.toLowerCase().includes('combo') && !selectedItems[id]) {
-            // Kiểm tra xem đã có combo nào được chọn chưa
-            const hasSelectedCombo = items.some(item =>
-                item.name.toLowerCase().includes('combo') && item.id !== id && selectedItems[item.id]
-            );
-
-            if (hasSelectedCombo) {
-                setErrorMessage("Bạn chỉ có thể chọn một combo tại một thời điểm");
-                return;
-            }
-        }
-
-        setErrorMessage('');
+    const handleCheckboxChange = (cartItemId) => {
         setSelectedItems(prev => ({
             ...prev,
-            [id]: !prev[id]
+            [cartItemId]: !prev[cartItemId]
         }));
     };
 
     const handleSelectAllChange = () => {
-        // Đếm số lượng combo trong giỏ hàng dựa trên tên
-        const comboCount = items.filter(item => item.name.toLowerCase().includes('combo')).length;
-
-        if (comboCount > 1) {
-            setErrorMessage("Bạn chỉ có thể chọn một combo tại một thời điểm");
-            return;
-        }
-
-        setErrorMessage('');
         const allSelected = Object.values(selectedItems).every(val => val);
         const newSelected = {};
         items.forEach(item => {
-            newSelected[item.id] = !allSelected;
+            newSelected[item.cartItemId] = !allSelected;
         });
         setSelectedItems(newSelected);
     };
 
-    const handleRemoveService = async (id) => {
+    const handleDeleteSelected = async () => {
+        const selectedIds = Object.keys(selectedItems)
+            .filter(id => selectedItems[id])
+            .map(Number);
+
+        if (selectedIds.length === 0) return;
+
         try {
             setLocalLoading(true);
-            await deleteItem(id);
+            await deleteItems(selectedIds);
             setSelectedItems(prev => {
                 const newSelected = { ...prev };
-                delete newSelected[id];
+                selectedIds.forEach(id => delete newSelected[id]);
                 return newSelected;
             });
-            setErrorMessage('');
         } catch (error) {
-            console.error("Xóa dịch vụ thất bại:", error);
+            console.error("Xóa thất bại:", error);
         } finally {
             setLocalLoading(false);
         }
@@ -98,12 +76,12 @@ const Cart = () => {
 
     const calculateSelectedTotal = () => {
         return items
-            .filter(item => selectedItems[item.id])
+            .filter(item => selectedItems[item.cartItemId])
             .reduce((sum, item) => sum + item.price, 0);
     };
 
     const countSelectedItems = () => {
-        return items.filter(item => selectedItems[item.id]).length;
+        return items.filter(item => selectedItems[item.cartItemId]).length;
     };
 
     const formatCurrency = (amount) => {
@@ -111,18 +89,8 @@ const Cart = () => {
     };
 
     const handleCheckout = () => {
-        const selectedServices = items.filter(item => selectedItems[item.id]);
-        if (selectedServices.length === 0) {
-            setErrorMessage("Vui lòng chọn ít nhất một dịch vụ");
-            return;
-        }
-
-        // Kiểm tra xem có nhiều hơn 1 combo được chọn không dựa trên tên
-        const selectedCombos = selectedServices.filter(item => item.name.toLowerCase().includes('combo'));
-        if (selectedCombos.length > 1) {
-            setErrorMessage("Bạn chỉ có thể chọn một combo tại một thời điểm");
-            return;
-        }
+        const selectedServices = items.filter(item => selectedItems[item.cartItemId]);
+        if (selectedServices.length === 0) return;
 
         navigate('/booking', { state: { services: selectedServices } });
     };
@@ -132,7 +100,7 @@ const Cart = () => {
             <>
                 <Header />
                 <main style={{ display: 'flex', justifyContent: 'center', marginTop: 260, marginBottom: 260 }}>
-                    <ClipLoader color="#3498db" size={50} />
+                    <ClipLoader color="#0a2a7c" size={50} />
                 </main>
                 <Footer />
             </>
@@ -146,11 +114,20 @@ const Cart = () => {
             <Header />
             <main className="container__main">
                 <div className="container">
-                    {errorMessage && (
-                        <div className="error-message">
-                            {errorMessage}
-                        </div>
-                    )}
+                    <div className="bulk-actions">
+                        <button
+                            className="btn-delete-selected"
+                            onClick={handleDeleteSelected}
+                            disabled={countSelectedItems() === 0}
+                        >
+                            {localLoading ? (
+                                <ClipLoader size={15} color="#fff" />
+                            ) : (
+                                `Xóa ${countSelectedItems()} mục đã chọn`
+                            )}
+                        </button>
+                    </div>
+
                     <table className="container__chart">
                         <thead>
                             <tr className="container__header">
@@ -166,7 +143,6 @@ const Cart = () => {
                                 <th>Đơn Giá</th>
                                 <th>Thời gian</th>
                                 <th>Số Tiền</th>
-                                <th>Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -178,19 +154,12 @@ const Cart = () => {
                                 </tr>
                             ) : (
                                 items.map(item => (
-                                    <tr key={item.id}>
+                                    <tr key={item.cartItemId}>
                                         <td>
                                             <input
                                                 type="checkbox"
-                                                checked={selectedItems[item.id] || false}
-                                                onChange={() => handleCheckboxChange(item.id)}
-                                                disabled={item.isCombo &&
-                                                    Object.keys(selectedItems).some(id =>
-                                                        selectedItems[id] &&
-                                                        items.find(i => i.id === id)?.isCombo &&
-                                                        id !== item.id
-                                                    )
-                                                }
+                                                checked={selectedItems[item.cartItemId] || false}
+                                                onChange={() => handleCheckboxChange(item.cartItemId)}
                                             />
                                         </td>
                                         <td>
@@ -206,18 +175,7 @@ const Cart = () => {
                                         </td>
                                         <td>{formatCurrency(item.price)}</td>
                                         <td>{item.haircutTime} phút</td>
-                                        <td>{selectedItems[item.id] ? formatCurrency(item.price) : '0₫'}</td>
-                                        <td>
-                                            <a
-                                                href="#"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleRemoveService(item.id);
-                                                }}
-                                            >
-                                                Xóa
-                                            </a>
-                                        </td>
+                                        <td>{selectedItems[item.cartItemId] ? formatCurrency(item.price) : '0₫'}</td>
                                     </tr>
                                 ))
                             )}
@@ -230,7 +188,13 @@ const Cart = () => {
                     <div className="header__total">
                         Tổng cộng ({countSelectedItems()} dịch vụ):
                         <span id="total"> {formatCurrency(calculateSelectedTotal())}</span>
-                        <button className="btn" onClick={handleCheckout}>ĐẶT LỊCH</button>
+                        <button
+                            className="btn"
+                            onClick={handleCheckout}
+                            disabled={countSelectedItems() === 0}
+                        >
+                            ĐẶT LỊCH
+                        </button>
                     </div>
                 </div>
             </main>

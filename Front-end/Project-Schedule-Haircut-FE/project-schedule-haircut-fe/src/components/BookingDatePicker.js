@@ -28,7 +28,7 @@ const BookingDatePicker = ({ selectedDate, onSelect, onNext, onBack }) => {
                 dayName,
                 date: formattedDate,
                 isWeekend,
-                disabled: i > 2 // Disable dates more than 2 days in the future
+                disabled: i > 1, // Chỉ cho chọn 2 ngày đầu tiên (i = 0 hoặc 1)
             });
         }
 
@@ -70,7 +70,10 @@ const BookingDatePicker = ({ selectedDate, onSelect, onNext, onBack }) => {
                         {dateOptions.map((date, index) => (
                             <div
                                 key={index}
-                                className={`date-option ${selectedDate === date.date ? 'selected' : ''}`}
+                                className={`date-option 
+                                    ${selectedDate === date.date ? 'selected' : ''} 
+                                    ${date.disabled ? 'disabled' : ''}
+                                `}
                                 onClick={() => {
                                     if (!date.disabled) {
                                         onSelect(date.date);
@@ -101,7 +104,7 @@ const BookingDatePicker = ({ selectedDate, onSelect, onNext, onBack }) => {
             )}
 
             <div className="navigation-buttons">
-                <button className="nav-button back-button" onClick={onBack}>
+                <button className="nav-button back-button-date-picker" onClick={onBack}>
                     Quay lại
                 </button>
                 <button

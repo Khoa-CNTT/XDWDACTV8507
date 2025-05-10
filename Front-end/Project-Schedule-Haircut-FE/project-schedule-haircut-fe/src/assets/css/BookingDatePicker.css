@@ -87,6 +87,17 @@
     background-color: #f0f7ff;
 }
 
+
+.date-option.disabled {
+    pointer-events: none;
+    /* Không cho click */
+    opacity: 0.5;
+    /* Làm mờ đi */
+    cursor: not-allowed;
+    /* Khi hover hiện dấu "không cho phép" */
+}
+
+
 .date-info {
     flex: 1;
 }
@@ -158,12 +169,12 @@
     border: none;
 }
 
-.back-button {
+.back-button-date-picker {
     background-color: #f0f0f0;
     color: #555;
 }
 
-.back-button:hover {
+.back-button-date-picker:hover {
     background-color: #e0e0e0;
 }
 

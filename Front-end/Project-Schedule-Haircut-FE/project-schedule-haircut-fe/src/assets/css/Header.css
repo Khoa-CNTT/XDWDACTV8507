@@ -60,7 +60,7 @@
     text-decoration: none;
     color: #272727;
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     padding: 0.5rem 1rem;
     display: inline-block;
     transition: all 0.3s ease;
@@ -159,7 +159,7 @@
 /* Dropdown Wrapper */
 .dropdown-wrapper {
     position: absolute;
-    top: 100%;
+    top: 77%;
     right: 0;
     z-index: 1000;
     opacity: 0;
@@ -176,7 +176,7 @@
 }
 
 /* Dropdown Menu */
-.dropdown-menu {
+.dropdown-menu-header {
     background: white;
     border-radius: 0.5rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);

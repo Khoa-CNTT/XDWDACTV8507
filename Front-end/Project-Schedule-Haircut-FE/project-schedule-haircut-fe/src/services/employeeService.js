@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAllEmployees as fetchAllEmployeesAction,
     clearEmployeeError as clearError,
@@ -7,6 +7,9 @@ import { toast } from 'react-toastify';
 
 const useEmployeeService = () => {
     const dispatch = useDispatch();
+    const { loading: isLoading, error } = useSelector((state) => state.employees);
+
+
     const getEmployees = async () => {
         try {
             dispatch(clearError());
@@ -25,7 +28,7 @@ const useEmployeeService = () => {
         }
     };
 
-    return { getEmployees };
+    return { getEmployees, isLoading, error };
 };
 
 export default useEmployeeService;

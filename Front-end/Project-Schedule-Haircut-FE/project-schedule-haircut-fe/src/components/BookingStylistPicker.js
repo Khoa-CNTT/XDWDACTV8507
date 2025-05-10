@@ -138,7 +138,7 @@ const BookingStylistPicker = ({ onNext, onBack, employees = [], hasSpaService = 
             )}
 
             <div className="navigation-buttons">
-                <button className="nav-button back-button" onClick={onBack}>
+                <button className="nav-button back-button-stylist-picker" onClick={onBack}>
                     Quay lại
                 </button>
                 <button

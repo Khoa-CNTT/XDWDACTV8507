@@ -177,3 +177,11 @@
         transform: rotate(360deg);
     }
 }
+
+@media (min-width: 1920px) {
+    .register-container {
+        max-width: 520px;
+        height: 58vh;
+        padding: 3rem;
+    }
+}

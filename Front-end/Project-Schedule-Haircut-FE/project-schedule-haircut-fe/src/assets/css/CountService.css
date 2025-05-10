@@ -9,13 +9,10 @@
     font-size: 16px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     position: absolute;
-    /* Position it absolutely within the parent container */
-    top: -10px;
-    /* Adjust position as needed */
-    right: -15px;
-    /* Adjust position as needed */
+    /* top: 163px; */
+    bottom: 40px;
+    left: 40px;
     min-width: 32px;
     text-align: center;
     z-index: 1;
-    /* Ensure it's above the image */
 }

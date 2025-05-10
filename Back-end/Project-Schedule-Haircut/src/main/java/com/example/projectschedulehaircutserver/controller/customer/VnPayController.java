@@ -1,9 +1,10 @@
+// File: VnPayController.java
 package com.example.projectschedulehaircutserver.controller.customer;
 
 import com.example.projectschedulehaircutserver.service.vnpay.VnPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -11,34 +12,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/customer/payment")
-@AllArgsConstructor
+@RequestMapping("customer/vnpay")
+@RequiredArgsConstructor
 public class VnPayController {
-    private VnPayService vnPayService;
 
-    // Tạo link thanh toán
-    @GetMapping("/create-payment")
-    public Map<String, String> createPayment(
+    private final VnPayService vnPayService;
+
+    @GetMapping("/create")
+    public Map<String, Object> createPayment(
             HttpServletRequest request,
             @RequestParam int amount,
             @RequestParam String orderInfo
     ) {
-        String paymentUrl = vnPayService.createOrder(request, amount, orderInfo);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("code", "00");
-        response.put("message", "Tạo liên kết thanh toán thành công");
-        response.put("data", paymentUrl);
-
-
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String paymentUrl = vnPayService.createPayment(request, amount, orderInfo);
+            response.put("code", "00");
+            response.put("message", "Payment URL created");
+            response.put("data", paymentUrl);
+        } catch (Exception e) {
+            response.put("code", "99");
+            response.put("message", "Error creating payment: " + e.getMessage());
+        }
         return response;
     }
 
-
-    // Xử lý callback từ VNPay
-    @GetMapping("/payment-return")
-    public void paymentReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Gọi service để xử lý và chuyển hướng
-        vnPayService.orderReturn(request, response);
-    }
+//    @GetMapping("/return")
+//    public void handlePaymentReturn(
+//            HttpServletRequest request,
+//            HttpServletResponse response
+//    ) {
+//        try {
+//            vnPayService.processPaymentReturn(request, response);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Payment return processing failed", e);
+//        }
+//    }
 }

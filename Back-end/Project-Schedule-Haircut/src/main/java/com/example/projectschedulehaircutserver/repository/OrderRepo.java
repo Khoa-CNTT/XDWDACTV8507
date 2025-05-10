@@ -17,8 +17,8 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
     @Query(value = "SELECT " +
             "o.id AS order_id , " +
             "o.order_date, " +
-            "o.order_starttime, " +
-            "o.order_endtime, " +
+            "o.order_start_time, " +
+            "o.order_end_time, " +
             "e.fullname AS employee_fullname, " +
             "c2.name AS combo_name, " +
             "s.name AS service_name, " +

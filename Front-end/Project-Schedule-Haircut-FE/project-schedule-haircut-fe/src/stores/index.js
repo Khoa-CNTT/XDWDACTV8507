@@ -9,7 +9,10 @@ import cartReducer from './slices/cartSlice';
 import orderReducer from './slices/orderSlice';
 import bookedReducer from './slices/bookedSlice';
 import actionFormReducer from './slices/actionFormSlice';
-
+import timeReducer from './slices/timeSlice';
+import staffReducer from './slices/staffSlice';
+import aiReducer from './slices/aiSlice';
+import managementReducer from './slices/managementSlice';
 
 const store = configureStore({
     reducer: {
@@ -23,6 +26,10 @@ const store = configureStore({
         order: orderReducer,
         booked: bookedReducer,
         actionForm: actionFormReducer,
+        time: timeReducer,
+        staff: staffReducer,
+        ai: aiReducer,
+        management: managementReducer,
     },
 });
 

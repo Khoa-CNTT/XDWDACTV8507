@@ -23,6 +23,7 @@ public interface CartItemRepo extends JpaRepository<CartItem, Integer> {
     Optional<CartItem> findCartItemByServiceIdAndCartId(@Param("serviceId") Integer serviceId, @Param("cartId") Integer cartId);
 
     @Query("SELECT new com.example.projectschedulehaircutserver.response.CartItemResponse(" +
+            "ci.id, " +
             "COALESCE(c.id, s.id), " +
             "COALESCE(c.name, s.name), " +
             "COALESCE(c.image, s.image), " +
@@ -31,10 +32,10 @@ public interface CartItemRepo extends JpaRepository<CartItem, Integer> {
             "COALESCE(c.category.type, s.category.type) " +
             ") " +
             "FROM CartItem ci " +
-            "LEFT JOIN ci.combo c " +  // Bỏ FETCH
-            "LEFT JOIN ci.service s " +  // Bỏ FETCH
-            "LEFT JOIN c.category " +  // JOIN thường
-            "LEFT JOIN s.category " +  // JOIN thường
+            "LEFT JOIN ci.combo c " +
+            "LEFT JOIN ci.service s " +
+            "LEFT JOIN c.category " +
+            "LEFT JOIN s.category " +
             "WHERE ci.cart.id = :cartId")
     Set<CartItemResponse> findCartItemsByCartId(@Param("cartId") Integer cartId);
 
@@ -45,4 +46,8 @@ public interface CartItemRepo extends JpaRepository<CartItem, Integer> {
     @Transactional
     @Query("DELETE FROM CartItem ci WHERE ci.cart.id = :cartId")
     void clearCartItemsByCartId(@Param("cartId") Integer cartId);
+
+    @Modifying
+    @Query("DELETE FROM CartItem ci WHERE ci.id IN :ids")
+    void deleteAllByIdIn(@Param("ids") Set<Integer> ids);
 }

@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -50,8 +51,8 @@ public class CartServiceImpl implements CartService{
                         cartItemRepo.save(cartItem);
                     }
                     return "Thêm Combo Vào Giỏ Hàng Thành Công";
-                } catch (Exception e){
-                    throw new CartItemException("Không Thể Thêm Combo Vào Giỏ Hàng");
+                } catch (CartItemException e){
+                    throw new CartItemException(e.getMessage());
                 }
             } else {
                 throw new ComboException("Không Tìm Thấy Combo");
@@ -83,7 +84,7 @@ public class CartServiceImpl implements CartService{
                     }
                     return "Thêm Dịch Vụ Vào Giỏ Hàng Thành Công";
                 } catch (Exception e){
-                    throw new CartItemException("Không Thể Thêm Dịch Vụ Vào Giỏ Hàng");
+                    throw new CartItemException(e.getMessage());
                 }
             } else {
                 throw new ComboException("Không Tìm Thấy Dịch Vụ");
@@ -117,6 +118,12 @@ public class CartServiceImpl implements CartService{
         } else {
             return 0;
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteCartItem(Set<Integer> cartItemIds) {
+        cartItemRepo.deleteAllByIdIn(cartItemIds);
     }
 
 

@@ -134,6 +134,8 @@ const Booking = () => {
                     setTime={(time) => setBookingData(prev => ({ ...prev, time }))}
                     onNext={() => handleNextStep({})}
                     onBack={handlePrevStep}
+                    employees={Object.values(bookingData.selectedStylists).filter(Boolean)}
+                    selectedDate={bookingData.date}
                 />
             )
         },

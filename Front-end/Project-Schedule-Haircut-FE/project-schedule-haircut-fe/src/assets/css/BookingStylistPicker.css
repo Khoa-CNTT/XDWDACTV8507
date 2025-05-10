@@ -122,12 +122,12 @@
     border: none;
 }
 
-.back-button {
+.back-button-stylist-picker {
     background-color: #f0f0f0;
     color: #555;
 }
 
-.back-button:hover {
+.back-button-stylist-picker:hover {
     background-color: #e0e0e0;
 }
 

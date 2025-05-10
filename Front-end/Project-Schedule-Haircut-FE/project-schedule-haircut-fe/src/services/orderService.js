@@ -1,7 +1,7 @@
 // src/services/orderService.js
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { createOrder, clearOrderState } from '../stores/slices/orderSlice';
+import { createOrder, clearOrderState, cancelOrder as cancelOrderAction } from '../stores/slices/orderSlice';
 import { toast } from 'react-toastify';
 
 const useOrderService = () => {
@@ -31,7 +31,29 @@ const useOrderService = () => {
         }
     };
 
-    return { order };
+    const cancelOrder = async (orderId, status) => {
+        try {
+            dispatch(clearOrderState());
+            console.log(orderId, status);
+
+            const resultAction = await dispatch(
+                cancelOrderAction({ orderId, status })
+            );
+
+            if (cancelOrderAction.fulfilled.match(resultAction)) {
+                toast.success("Huỷ lịch thành công");
+                return true;
+            } else {
+                const errorMsg = resultAction.payload || 'Huỷ lịch thất bại';
+                throw new Error(errorMsg);
+            }
+        } catch (error) {
+            toast.error(error.message);
+            throw error;
+        }
+    };
+
+    return { order, cancelOrder };
 };
 
 export default useOrderService;
